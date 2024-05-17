@@ -70,20 +70,20 @@ jobs:
         uses: fjogeleit/yaml-update-action@main
         with:
           commitChange: false
-          valueFile: "_config.yml"
+          valueFile: "docs/_config.yml"
           propertyPath: "giscus.repo"
           value: ${{ github.repository }}
+      - name: Install dependencies 🔧
+        run: bundle install
+        working-directory: docs
       - name: Install and Build 🔧
         run: |
           pip3 install --upgrade jupyter
           export JEKYLL_ENV=production
           bundle exec jekyll build --lsi
-      - name: Purge unused CSS 🧹
-        run: |
-          npm install -g purgecss
-          purgecss -c purgecss.config.js
+        working-directory: docs
       - name: Deploy 🚀
         if: github.event_name != 'pull_request'
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: _site
+          folder: docs/_site
