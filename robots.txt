@@ -1,4 +1,4 @@
 User-agent: *
 Disallow:
 
-Sitemap: https://theroboticsclub.github.io/sitemap.xml
+Sitemap: https://theroboticsclub.github.io/gsoc2024-ZebinHuang/sitemap.xml
