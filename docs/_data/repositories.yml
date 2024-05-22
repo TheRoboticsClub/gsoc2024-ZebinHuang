@@ -1,12 +1,7 @@
-github_users:
-  - torvalds
-  - alshedivat
+# github_users:
+  # - zebin-huang
 
 github_repos:
-  - alshedivat/al-folio
-  - twbs/bootstrap
-  - jekyll/jekyll
-  - jquery/jquery
-  - FortAwesome/Font-Awesome
-  - jpswalsh/academicons
-  - mathjax/MathJax
+  - JdeRobot/BehaviorMetrics
+  - TheRoboticsClub/gsoc2023-Meiqi_Zhao
+  - JdeRobot/DeepLearningStudio
