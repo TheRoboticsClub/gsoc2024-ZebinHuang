@@ -1,10 +1,19 @@
 ---
-layout: post
-title: Community Bonding 5/15 - 5/21
-date: 2024-05-24 10:14:00-0400
+layout: distill
+title: Bonding 5/15 - 5/21
 description: Initial setup for GSoC 2024 and summary of first meetings
-tags: GSoC, Weekly blogs, JdeRobot
+tags: GSoC, Weekly_blogs, JdeRobot
 categories: gsoc-2024
+date: 2024-05-24
+permalink: /blog/2024/community-bonding-5-15-5-21/
+# featured: true
+
+authors:
+  - name: Zebin Huang
+    affiliations:
+      name: Edinburgh Centre for Robotics
+
+bibliography: posts.bib
 ---
 
 ### GSoC Setting Things
