@@ -31,6 +31,6 @@ In previous editions of GSoC, we have explored [Behavior Metrics](https://github
 
 The idea is to integrate an LLM system with an end-to-end autonomous driving model so the user can give commands in text mode directly to the vehicle, as you would when using a real-life taxi (“please, stop here”, “please, turn to the left at the next intersection”). This idea has already been explored in research projects, and we will be replicating it.
 
-Mentors: Sergio (sergiopaniegoblanco AT gmail.com), Nikhil Paliwal ( nikhil.paliwal14 AT gmail.com ), David Pérez (david.perez.saura AT upm.es) and Qi Zhao (skyler.zhaomeiqi AT gmail.com)
+Mentors: Sergio Paniego Blanco (sergiopaniegoblanco AT gmail.com), Apoorv Garg (apoorvgarg.ms AT gmail.com)， Nikhil Paliwal ( nikhil.paliwal14 AT gmail.com ), David Pérez (david.perez.saura AT upm.es) and Meiqi Zhao (skyler.zhaomeiqi AT gmail.com)
 
 For a list of our projects, please visit [repositories page](/gsoc2024-ZebinHuang/repositories/).
