@@ -1,0 +1,201 @@
+<!DOCTYPE html> <html> <head> <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> <meta charset="utf-8"> <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <title> Coding week345 6/10-6/30 | Zebin Huang | JdeRobot x GSoC2024 </title> <meta name="author" content="Zebin Huang"> <meta name="description" content="Zebin Huang | JdeRobot x GSoC2024 "> <meta name="keywords" content="jekyll, jekyll-theme, academic-website, portfolio-website"> <link rel="stylesheet" href="/gsoc2024-ZebinHuang/assets/css/bootstrap.min.css?a4b3f509e79c54a512b890d73235ef04"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/css/mdb.min.css" integrity="sha256-jpjYvU3G3N6nrrBwXJoVEYI/0zw8htfFnhT9ljN3JJw=" crossorigin="anonymous"> <link defer rel="stylesheet" href="/gsoc2024-ZebinHuang/assets/css/academicons.min.css?f0b7046b84e425c55f3463ac249818f5"> <link defer rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:100,300,400,500,700|Material+Icons&amp;display=swap"> <link defer rel="stylesheet" href="/gsoc2024-ZebinHuang/assets/css/jekyll-pygments-themes-github.css?591dab5a4e56573bf4ef7fd332894c99" media="" id="highlight_theme_light"> <link rel="shortcut icon" href="/gsoc2024-ZebinHuang/assets/img/logo.png?a3cac8c2613225704682d343b37ffd84"> <link rel="stylesheet" href="/gsoc2024-ZebinHuang/assets/css/main.css?d41d8cd98f00b204e9800998ecf8427e"> <link rel="canonical" href="https://theroboticsclub.github.io/gsoc2024-ZebinHuang/blog/2024/coding-week345-6-10-6-30/"> <script src="/gsoc2024-ZebinHuang/assets/js/theme.js?a5ca4084d3b81624bcfa01156dae2b8e"></script> <link defer rel="stylesheet" href="/gsoc2024-ZebinHuang/assets/css/jekyll-pygments-themes-native.css?5847e5ed4a4568527aa6cfab446049ca" media="none" id="highlight_theme_dark"> <script>initTheme();</script> <script defer src="https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/dist/medium-zoom.min.js" integrity="sha256-ZgMyDAIYDYGxbcpJcfUnYwNevG/xi9OHKaR/8GK+jWc=" crossorigin="anonymous"></script> <script defer src="/gsoc2024-ZebinHuang/assets/js/zoom.js?85ddb88934d28b74e78031fd54cf8308"></script> <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script> <script type="text/javascript">window.MathJax={tex:{tags:"ams"}};</script> <script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.min.js" integrity="sha256-rjmgmaB99riUNcdlrDtcAiwtLIojSxNyUFdl+Qh+rB4=" crossorigin="anonymous"></script> <script defer src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6" crossorigin="anonymous"></script> <script src="/gsoc2024-ZebinHuang/assets/js/distillpub/template.v2.js"></script> <script src="/gsoc2024-ZebinHuang/assets/js/distillpub/transforms.v2.js"></script> <script src="/gsoc2024-ZebinHuang/assets/js/distillpub/overrides.js"></script> </head> <body> <d-front-matter> <script async type="text/json">
+      {
+            "title": "Coding week345 6/10-6/30",
+            "description": "",
+            "published": "June 30, 2024",
+            "authors": [
+              
+              {
+                "author": "Zebin Huang",
+                "authorURL": "",
+                "affiliations": [
+                  {
+                    "name": "Edinburgh Centre for Robotics",
+                    "url": ""
+                  }
+                ]
+              }
+              
+            ],
+            "katex": {
+              "delimiters": [
+                {
+                  "left": "$",
+                  "right": "$",
+                  "display": false
+                },
+                {
+                  "left": "$$",
+                  "right": "$$",
+                  "display": true
+                }
+              ]
+            }
+          }
+    </script> </d-front-matter> <header> <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top" role="navigation"> <div class="container"> <a class="navbar-brand title font-weight-lighter" href="/gsoc2024-ZebinHuang/"> Zebin Huang | JdeRobot x GSoC2024 </a> <button class="navbar-toggler collapsed ml-auto" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar top-bar"></span> <span class="icon-bar middle-bar"></span> <span class="icon-bar bottom-bar"></span> </button> <div class="collapse navbar-collapse text-right" id="navbarNav"> <ul class="navbar-nav ml-auto flex-nowrap"> <li class="nav-item "> <a class="nav-link" href="/gsoc2024-ZebinHuang/">about </a> </li> <li class="nav-item "> <a class="nav-link" href="/gsoc2024-ZebinHuang/blog/">blog </a> </li> <li class="nav-item "> <a class="nav-link" href="/gsoc2024-ZebinHuang/repositories/">repositories </a> </li> <li class="toggle-container"> <button id="light-toggle" title="Change theme"> <i class="ti ti-sun-moon" id="light-toggle-system"></i> <i class="ti ti-moon-filled" id="light-toggle-dark"></i> <i class="ti ti-sun-filled" id="light-toggle-light"></i> </button> </li> </ul> </div> </div> </nav> <progress id="progress" value="0"> <div class="progress-container"> <span class="progress-bar"></span> </div> </progress> </header> <div class="post distill"> <d-title> <h1>Coding week345 6/10-6/30</h1> <p></p> </d-title> <d-byline></d-byline> <d-article> <h3 id="weekly-meeting">Weekly Meeting</h3> <p>In our recent meeting, we focused on enhancing our instruction generation process. I highlighted issues with data distribution, particularly the high similarity in GPT-generated data. To tackle this, we discussed strategies to balance our datasets, aiming to reduce redundancy and improve the diversity of the generated outputs. Sergio provided insights from previous projects, reviewing four key commands and proposing additional commands to enhance our current project’s functionality and efficiency. Additionally, we evaluated the metrics for our BERT model, agreeing that dividing the dataset into testing and training sets could yield acceptable results.</p> <p>More details can be found here: <a href="https://docs.google.com/document/d/1b2ZEU5Gt8gP2ae_YzNSJSd7RukUrsG_aDJFLnbvoQiM/edit" rel="external nofollow noopener" target="_blank">Google Doc</a></p> <h3 id="data-generation">Data Generation</h3> <p>Currently, although our dataset is relatively balanced, the randomness of the data is not high, leading to a significant amount of duplicate data. To address this issue and improve the diversity of GPT-generated instructions, we’ve identified several solutions:</p> <p>Solution 1: Adjusting Parameters for Diversity</p> <p>By fine-tuning the <code class="language-plaintext highlighter-rouge">temperature</code> and <code class="language-plaintext highlighter-rouge">top_p</code> parameters, we can enhance the diversity of generated instructions. The temperature parameter controls the randomness of predictions by scaling the logits before applying softmax. A higher temperature results in more random outputs. The <code class="language-plaintext highlighter-rouge">top_p</code> parameter, also known as nucleus sampling, which ensures that the model considers only the <code class="language-plaintext highlighter-rouge">top p fraction</code> of cumulative probability mass, thus allowing for a more focused yet diverse set of outputs. By carefully balancing these parameters, we can generate a broader range of unique instructions.</p> <p>Solution 2: Increasing the Number of Samples Generated</p> <p>Generating a larger number of samples and then filtering out unique instructions can effectively increase diversity. This approach includes:</p> <ul> <li>Generating More Samples: Produce a higher volume of samples than needed, ensuring a wide variety of potential instructions.</li> <li>Dynamic Batch Size: Implement a dynamic batch size that adjusts according to the remaining number of samples to be generated. To avoid hard-coding the batch size, it is set to twice the number of remaining samples, but not exceeding 50. This flexibility ensures efficient use of resources while maintaining the target number of unique instructions.</li> <li>Collection De-duplication: Utilize collection auto-de-duplication to filter out duplicate instructions. After de-duplication, limit the collection to the desired number of unique instructions. This process ensures that the final set of instructions is both diverse and manageable.</li> </ul> <p>Solution 3: Adding Contextual Information</p> <p>Incorporating more contextual information into the prompts can help the model generate more diverse instructions. Providing detailed context allows the model to understand the nuances of the task better, leading to richer and more varied outputs. This could involve including specific scenarios, additional background information, or detailed task descriptions within the prompts. By doing so, we enable the model to generate instructions that are not only diverse but also more relevant and contextually appropriate.</p> <h3 id="iteration-method-example">Iteration Method Example</h3> <figure> <picture> <source class="responsive-img-srcset" srcset="/gsoc2024-ZebinHuang/assets/img/iter-480.webp 480w,/gsoc2024-ZebinHuang/assets/img/iter-800.webp 800w,/gsoc2024-ZebinHuang/assets/img/iter-1400.webp 1400w," sizes="95vw" type="image/webp"></source> <img src="/gsoc2024-ZebinHuang/assets/img/iter.png" class="img-fluid rounded z-depth-1" width="100%" height="auto" data-zoomable="" loading="lazy" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> <p>In one iteration, generating unique instructions for the action ‘LaneFollow’ involved multiple steps.</p> <p>Similarly, generating instructions for actions like ‘Left’, ‘Right’, and ‘Straight’ required repeated attempts to reach the desired count of unique instructions, resulting in high redundancy and a longer processing time.</p> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Action <span class="s1">'LaneFollow'</span>: Generated 1 / 25 unique instructions
+Action <span class="s1">'LaneFollow'</span>: Generated 2 / 25 unique instructions
+Action <span class="s1">'LaneFollow'</span>: Generated 3 / 25 unique instructions
+Action <span class="s1">'LaneFollow'</span>: Generated 4 / 25 unique instructions
+Action <span class="s1">'LaneFollow'</span>: Generated 5 / 25 unique instructions
+Action <span class="s1">'LaneFollow'</span>: Generated 6 / 25 unique instructions
+Action <span class="s1">'LaneFollow'</span>: Generated 7 / 25 unique instructions
+Action <span class="s1">'LaneFollow'</span>: Generated 8 / 25 unique instructions
+Action <span class="s1">'LaneFollow'</span>: Generated 9 / 25 unique instructions
+Action <span class="s1">'LaneFollow'</span>: Generated 10 / 25 unique instructions
+Action <span class="s1">'LaneFollow'</span>: Generated 11 / 25 unique instructions
+Action <span class="s1">'LaneFollow'</span>: Generated 12 / 25 unique instructions
+Action <span class="s1">'LaneFollow'</span>: Generated 13 / 25 unique instructions
+Action <span class="s1">'LaneFollow'</span>: Generated 14 / 25 unique instructions
+Action <span class="s1">'LaneFollow'</span>: Generated 15 / 25 unique instructions
+Action <span class="s1">'LaneFollow'</span>: Generated 16 / 25 unique instructions
+Action <span class="s1">'LaneFollow'</span>: Generated 17 / 25 unique instructions
+Action <span class="s1">'LaneFollow'</span>: Generated 18 / 25 unique instructions
+Action <span class="s1">'LaneFollow'</span>: Generated 19 / 25 unique instructions
+Action <span class="s1">'LaneFollow'</span>: Generated 20 / 25 unique instructions
+Action <span class="s1">'LaneFollow'</span>: Generated 21 / 25 unique instructions
+Action <span class="s1">'LaneFollow'</span>: Generated 22 / 25 unique instructions
+Action <span class="s1">'LaneFollow'</span>: Generated 23 / 25 unique instructions
+Action <span class="s1">'LaneFollow'</span>: Generated 24 / 25 unique instructions
+Action <span class="s1">'LaneFollow'</span>: Generated 25 / 25 unique instructions
+Action <span class="s1">'Left'</span>: Generated 1 / 25 unique instructions
+Action <span class="s1">'Left'</span>: Generated 2 / 25 unique instructions
+Action <span class="s1">'Left'</span>: Generated 3 / 25 unique instructions
+Action <span class="s1">'Left'</span>: Generated 4 / 25 unique instructions
+Action <span class="s1">'Left'</span>: Generated 5 / 25 unique instructions
+Action <span class="s1">'Left'</span>: Generated 6 / 25 unique instructions
+Action <span class="s1">'Left'</span>: Generated 7 / 25 unique instructions
+Action <span class="s1">'Left'</span>: Generated 8 / 25 unique instructions
+Action <span class="s1">'Left'</span>: Generated 9 / 25 unique instructions
+Action <span class="s1">'Left'</span>: Generated 10 / 25 unique instructions
+Action <span class="s1">'Left'</span>: Generated 11 / 25 unique instructions
+Action <span class="s1">'Left'</span>: Generated 12 / 25 unique instructions
+Action <span class="s1">'Left'</span>: Generated 13 / 25 unique instructions
+Action <span class="s1">'Left'</span>: Generated 14 / 25 unique instructions
+Action <span class="s1">'Left'</span>: Generated 15 / 25 unique instructions
+Action <span class="s1">'Left'</span>: Generated 16 / 25 unique instructions
+Action <span class="s1">'Left'</span>: Generated 17 / 25 unique instructions
+Action <span class="s1">'Left'</span>: Generated 18 / 25 unique instructions
+Action <span class="s1">'Left'</span>: Generated 19 / 25 unique instructions
+Action <span class="s1">'Left'</span>: Generated 20 / 25 unique instructions
+Action <span class="s1">'Left'</span>: Generated 21 / 25 unique instructions
+Action <span class="s1">'Left'</span>: Generated 22 / 25 unique instructions
+Action <span class="s1">'Left'</span>: Generated 23 / 25 unique instructions
+Action <span class="s1">'Left'</span>: Generated 24 / 25 unique instructions
+Action <span class="s1">'Left'</span>: Generated 25 / 25 unique instructions
+Action <span class="s1">'Right'</span>: Generated 1 / 25 unique instructions
+Action <span class="s1">'Right'</span>: Generated 2 / 25 unique instructions
+Action <span class="s1">'Right'</span>: Generated 3 / 25 unique instructions
+Action <span class="s1">'Right'</span>: Generated 4 / 25 unique instructions
+Action <span class="s1">'Right'</span>: Generated 5 / 25 unique instructions
+Action <span class="s1">'Right'</span>: Generated 6 / 25 unique instructions
+Action <span class="s1">'Right'</span>: Generated 7 / 25 unique instructions
+Action <span class="s1">'Right'</span>: Generated 8 / 25 unique instructions
+Action <span class="s1">'Right'</span>: Generated 9 / 25 unique instructions
+Action <span class="s1">'Right'</span>: Generated 10 / 25 unique instructions
+Action <span class="s1">'Right'</span>: Generated 11 / 25 unique instructions
+Action <span class="s1">'Right'</span>: Generated 12 / 25 unique instructions
+Action <span class="s1">'Right'</span>: Generated 13 / 25 unique instructions
+Action <span class="s1">'Right'</span>: Generated 14 / 25 unique instructions
+Action <span class="s1">'Right'</span>: Generated 15 / 25 unique instructions
+Action <span class="s1">'Right'</span>: Generated 16 / 25 unique instructions
+Action <span class="s1">'Right'</span>: Generated 17 / 25 unique instructions
+Action <span class="s1">'Right'</span>: Generated 18 / 25 unique instructions
+Action <span class="s1">'Right'</span>: Generated 19 / 25 unique instructions
+Action <span class="s1">'Right'</span>: Generated 20 / 25 unique instructions
+Action <span class="s1">'Right'</span>: Generated 21 / 25 unique instructions
+Action <span class="s1">'Right'</span>: Generated 22 / 25 unique instructions
+Action <span class="s1">'Right'</span>: Generated 23 / 25 unique instructions
+Action <span class="s1">'Right'</span>: Generated 24 / 25 unique instructions
+Action <span class="s1">'Right'</span>: Generated 25 / 25 unique instructions
+Action <span class="s1">'Straight'</span>: Generated 1 / 25 unique instructions
+Action <span class="s1">'Straight'</span>: Generated 2 / 25 unique instructions
+Action <span class="s1">'Straight'</span>: Generated 3 / 25 unique instructions
+Action <span class="s1">'Straight'</span>: Generated 4 / 25 unique instructions
+Action <span class="s1">'Straight'</span>: Generated 5 / 25 unique instructions
+Action <span class="s1">'Straight'</span>: Generated 6 / 25 unique instructions
+Action <span class="s1">'Straight'</span>: Generated 7 / 25 unique instructions
+Action <span class="s1">'Straight'</span>: Generated 8 / 25 unique instructions
+Action <span class="s1">'Straight'</span>: Generated 9 / 25 unique instructions
+Action <span class="s1">'Straight'</span>: Generated 10 / 25 unique instructions
+Action <span class="s1">'Straight'</span>: Generated 11 / 25 unique instructions
+Action <span class="s1">'Straight'</span>: Generated 12 / 25 unique instructions
+Action <span class="s1">'Straight'</span>: Generated 13 / 25 unique instructions
+Action <span class="s1">'Straight'</span>: Generated 14 / 25 unique instructions
+Action <span class="s1">'Straight'</span>: Generated 15 / 25 unique instructions
+Action <span class="s1">'Straight'</span>: Generated 16 / 25 unique instructions
+Action <span class="s1">'Straight'</span>: Generated 17 / 25 unique instructions
+Action <span class="s1">'Straight'</span>: Generated 18 / 25 unique instructions
+Action <span class="s1">'Straight'</span>: Generated 19 / 25 unique instructions
+Action <span class="s1">'Straight'</span>: Generated 20 / 25 unique instructions
+Action <span class="s1">'Straight'</span>: Generated 21 / 25 unique instructions
+Action <span class="s1">'Straight'</span>: Generated 22 / 25 unique instructions
+Action <span class="s1">'Straight'</span>: Generated 23 / 25 unique instructions
+Action <span class="s1">'Straight'</span>: Generated 24 / 25 unique instructions
+Action <span class="s1">'Straight'</span>: Generated 25 / 25 unique instructions
+                                          instruction        action
+0   <span class="s2">"Enter the highway and LaneFollow the middle l...  [LaneFollow]
+1   "</span>Continue straight on Main Street and LaneFoll...  <span class="o">[</span>LaneFollow]
+2   <span class="s2">"Enter the highway and LaneFollow the traffic ...  [LaneFollow]
+3   "</span>Enter the highway and LaneFollow the traffic ...  <span class="o">[</span>LaneFollow]
+4   <span class="s2">"Once you enter the highway, activate LaneFoll...  [LaneFollow]
+..                                                ...           ...
+95  "</span>Continue driving straight on Main Street <span class="k">for</span> ...    <span class="o">[</span>Straight]
+96    <span class="s2">"Continue straight on the highway for 5 miles."</span>    <span class="o">[</span>Straight]
+97  <span class="s2">"Continue driving straight on Main Street for ...    [Straight]
+98  "</span>Continue driving straight on this road <span class="k">for </span>an...    <span class="o">[</span>Straight]
+99  <span class="s2">"Continue driving straight on this road for tw...    [Straight]
+
+[100 rows x 2 columns]
+Dataset generated and saved to 'dataset_1000.csv'
+Generated 100 instructions in 221.16 seconds.
+</span></code></pre></div></div> <h3 id="batch-method-example">Batch Method Example</h3> <p>By contrast, using a batch method improves efficiency and reduces redundancy. For example:</p> <figure> <picture> <source class="responsive-img-srcset" srcset="/gsoc2024-ZebinHuang/assets/img/batch-480.webp 480w,/gsoc2024-ZebinHuang/assets/img/batch-800.webp 800w,/gsoc2024-ZebinHuang/assets/img/batch-1400.webp 1400w," sizes="95vw" type="image/webp"></source> <img src="/gsoc2024-ZebinHuang/assets/img/batch.png" class="img-fluid rounded z-depth-1" width="100%" height="auto" data-zoomable="" loading="lazy" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Action <span class="s1">'LaneFollow'</span>: Generated 25 / 25 unique instructions
+Action <span class="s1">'Left'</span>: Generated 17 / 25 unique instructions
+Action <span class="s1">'Left'</span>: Generated 19 / 25 unique instructions
+Action <span class="s1">'Left'</span>: Generated 21 / 25 unique instructions
+Action <span class="s1">'Left'</span>: Generated 22 / 25 unique instructions
+Action <span class="s1">'Left'</span>: Generated 23 / 25 unique instructions
+Action <span class="s1">'Left'</span>: Generated 23 / 25 unique instructions
+Action <span class="s1">'Left'</span>: Generated 25 / 25 unique instructions
+Action <span class="s1">'Right'</span>: Generated 25 / 25 unique instructions
+Action <span class="s1">'Straight'</span>: Generated 23 / 25 unique instructions
+Action <span class="s1">'Straight'</span>: Generated 25 / 25 unique instructions
+                                          instruction        action
+0   <span class="s2">"LaneFollow the vehicle in front of you as you...  [LaneFollow]
+1   "</span>Continue LaneFollow on the highway <span class="k">for </span>the ne...  <span class="o">[</span>LaneFollow]
+2   <span class="s2">"Once on the highway, LaneFollow and maintain ...  [LaneFollow]
+3   "</span>Enter the highway and LaneFollow the middle l...  <span class="o">[</span>LaneFollow]
+4   <span class="s2">"Stay in the right lane and LaneFollow the veh...  [LaneFollow]
+..                                                ...           ...
+95  "</span>Continue straight on the highway <span class="k">for </span>5 miles ...    <span class="o">[</span>Straight]
+96  <span class="s2">"Continue straight on this road for the next 2...    [Straight]
+97  "</span>Continue straight on the highway <span class="k">for </span>another ...    <span class="o">[</span>Straight]
+98  <span class="s2">"Continue driving straight on this road for th...    [Straight]
+99  "</span>Continue driving straight on the highway <span class="k">for</span> ...    <span class="o">[</span>Straight]
+
+<span class="o">[</span>100 rows x 2 columns]
+Dataset generated and saved to <span class="s1">'dataset_1000.csv'</span>
+Generated 100 instructions <span class="k">in </span>158.48 seconds.
+</code></pre></div></div> <p>The batch method resulted in fewer duplicate instructions and a significant improvement in processing time.</p> <ul> <li>Iteration Method: Generated 100 instructions with <strong>521</strong> duplicates in <strong>221.16</strong> seconds.</li> <li>Batch Method: Generated 100 instructions with <strong>122</strong> duplicates in <strong>158.48</strong> seconds.</li> </ul> <p>The batch method improved efficiency by <strong>28.34%</strong> and reduced duplicates by <strong>326.23%</strong> compared to the iteration method.</p> <h3 id="data-analysis">Data Analysis</h3> <p>In addition to optimizing the generation of instructions, I performed an analysis of the data distribution and created a word cloud to visualize the most frequently occurring terms. This analysis helped us understand the underlying patterns in the dataset and identify areas for improvement.</p> <p>Data Distribution Analysis</p> <figure> <picture> <source class="responsive-img-srcset" srcset="/gsoc2024-ZebinHuang/assets/img/data_distribution_630-480.webp 480w,/gsoc2024-ZebinHuang/assets/img/data_distribution_630-800.webp 800w,/gsoc2024-ZebinHuang/assets/img/data_distribution_630-1400.webp 1400w," sizes="95vw" type="image/webp"></source> <img src="/gsoc2024-ZebinHuang/assets/img/data_distribution_630.png" class="img-fluid rounded z-depth-1" width="100%" height="auto" data-zoomable="" loading="lazy" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> <p>By examining the distribution of instructions across different actions, we identified four actions are balanced.</p> <p>Word Cloud</p> <figure> <picture> <source class="responsive-img-srcset" srcset="/gsoc2024-ZebinHuang/assets/img/word_cloud_630-480.webp 480w,/gsoc2024-ZebinHuang/assets/img/word_cloud_630-800.webp 800w,/gsoc2024-ZebinHuang/assets/img/word_cloud_630-1400.webp 1400w," sizes="95vw" type="image/webp"></source> <img src="/gsoc2024-ZebinHuang/assets/img/word_cloud_630.png" class="img-fluid rounded z-depth-1" width="100%" height="auto" data-zoomable="" loading="lazy" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> <p>The word cloud provided a visual representation of the most common terms in our dataset. Words like “continue,” “straight,” “left,” and “right” appeared frequently, indicating their prominence in the instructions. This visualization highlighted the need to diversify the vocabulary used in the generated instructions to enhance the overall richness and utility of the dataset.</p> <h3 id="scalable-of-datasets">Scalable of Datasets</h3> <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">Action </span><span class="sh">'</span><span class="si">{</span><span class="n">action</span><span class="si">}</span><span class="sh">'</span><span class="s">: Generated </span><span class="si">{</span><span class="nf">len</span><span class="p">(</span><span class="n">unique_instructions</span><span class="p">)</span><span class="si">}</span><span class="s"> / </span><span class="si">{</span><span class="n">num_samples_per_action</span><span class="si">}</span><span class="s"> unique instructions</span><span class="sh">"</span><span class="p">)</span>
+</code></pre></div></div> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Action <span class="s1">'LaneFollow'</span>: Generated 43 / 125 unique instructions
+Action <span class="s1">'LaneFollow'</span>: Generated 76 / 125 unique instructions
+Action <span class="s1">'LaneFollow'</span>: Generated 112 / 125 unique instructions
+Action <span class="s1">'LaneFollow'</span>: Generated 125 / 125 unique instructions
+Action <span class="s1">'Left'</span>: Generated 17 / 125 unique instructions
+Action <span class="s1">'Left'</span>: Generated 26 / 125 unique instructions
+Action <span class="s1">'Left'</span>: Generated 31 / 125 unique instructions
+Action <span class="s1">'Left'</span>: Generated 33 / 125 unique instructions
+Action <span class="s1">'Left'</span>: Generated 40 / 125 unique instructions
+Action <span class="s1">'Left'</span>: Generated 44 / 125 unique instructions
+Action <span class="s1">'Left'</span>: Generated 47 / 125 unique instructions
+Action <span class="s1">'Left'</span>: Generated 50 / 125 unique instructions
+Action <span class="s1">'Left'</span>: Generated 50 / 125 unique instructions
+Action <span class="s1">'Left'</span>: Generated 51 / 125 unique instructions
+Action <span class="s1">'Left'</span>: Generated 54 / 125 unique instructions
+Action <span class="s1">'Left'</span>: Generated 55 / 125 unique instructions
+Action <span class="s1">'Left'</span>: Generated 57 / 125 unique instructions
+Action <span class="s1">'Left'</span>: Generated 58 / 125 unique instructions
+Action <span class="s1">'Left'</span>: Generated 60 / 125 unique instructions
+Action <span class="s1">'Left'</span>: Generated 61 / 125 unique instructions
+Action <span class="s1">'Left'</span>: Generated 63 / 125 unique instructions
+Action <span class="s1">'Left'</span>: Generated 65 / 125 unique instructions
+</code></pre></div></div> <p>The implication of our current approach is that approximately 98% of the instructions generated in each batch will be discarded. This high discard rate indicates an inherent limitation in the method, where repeated looping of a prompt leads to a significant number of duplicate instructions. This issue highlights the challenges associated with maintaining diversity and uniqueness in large-scale instruction generation.</p> <p>While we have successfully addressed issues related to small-scale data generation, balancing the dataset, and reducing data duplication, the challenge of data scaling remains unresolved. Scaling up our data generation processes without compromising diversity and quality is a complex problem that requires further exploration. If there is a demand for online large-scale data generation, we will need to develop and implement new strategies to handle these challenges. This may involve advanced techniques for dynamic prompt generation, more sophisticated filtering algorithms, and possibly leveraging real-time data augmentation methods to ensure a continuous stream of unique and varied instructions.</p> </d-article> <d-appendix> <d-footnote-list></d-footnote-list> <d-citation-list></d-citation-list> </d-appendix> <d-bibliography src="/gsoc2024-ZebinHuang/assets/bibliography/posts.bib"></d-bibliography> </div> <footer class="fixed-bottom" role="contentinfo"> <div class="container mt-0"> © Copyright 2024 Zebin Huang. Powered by <a href="https://jekyllrb.com/" target="_blank" rel="external nofollow noopener">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio" rel="external nofollow noopener" target="_blank">al-folio</a> theme. Hosted by <a href="https://pages.github.com/" target="_blank" rel="external nofollow noopener">GitHub Pages</a>. </div> </footer> <script src="/gsoc2024-ZebinHuang/assets/js/bootstrap.bundle.min.js"></script> <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/js/mdb.min.js" integrity="sha256-NdbiivsvWt7VYCt6hYNT3h/th9vSTL4EDWeGs5SN3DA=" crossorigin="anonymous"></script> <script type="text/javascript">function progressBarSetup(){"max"in document.createElement("progress")?(initializeProgressElement(),$(document).on("scroll",function(){progressBar.attr({value:getCurrentScrollPosition()})}),$(window).on("resize",initializeProgressElement)):(resizeProgressBar(),$(document).on("scroll",resizeProgressBar),$(window).on("resize",resizeProgressBar))}function getCurrentScrollPosition(){return $(window).scrollTop()}function initializeProgressElement(){let e=$("#navbar").outerHeight(!0);$("body").css({"padding-top":e}),$("progress-container").css({"padding-top":e}),progressBar.css({top:e}),progressBar.attr({max:getDistanceToScroll(),value:getCurrentScrollPosition()})}function getDistanceToScroll(){return $(document).height()-$(window).height()}function resizeProgressBar(){progressBar.css({width:getWidthPercentage()+"%"})}function getWidthPercentage(){return getCurrentScrollPosition()/getDistanceToScroll()*100}const progressBar=$("#progress");window.onload=function(){setTimeout(progressBarSetup,50)};</script> </body> </html>
