@@ -1,0 +1,4 @@
+77 1 166 "Make a left turn at the upcoming fork in the road." "Make a sharp left turn at the T-junction ahead."
+52 59 148 "Make a left turn at the stop sign." "Take the second right onto Main Street after passing the gas station."
+69 51 136 "Make a left turn at the stop sign ahead." "Make a right turn at the second stop sign."
+23 61 269 "Make a left turn at the stop sign." "Continue straight on the highway for the next 10 miles."
