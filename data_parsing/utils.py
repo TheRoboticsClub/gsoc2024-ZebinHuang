@@ -60,7 +60,8 @@ def generate_instruction_prompt(action, batch_size):
     "At the roundabout, take the second exit."
     "Keep left to stay on the main road."
     There does not need to be any numerical numbering or any prefixes.
-    Generate {batch_size} unique instruction that include '{action}':
+    Generate {batch_size} unique instruction.
+    Use vocabulary with a meaning similar to '{action}', but not the same word:
     """
 
 
