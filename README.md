@@ -13,6 +13,8 @@
     <br />
     <a href="https://github.com/TheRoboticsClub/gsoc2024-ZebinHuang">View Demo (Upcoming)</a>
     ·
+    <a href="https://huggingface.co/zebin-huang/gsoc2024-ZebinHuang">Hugging Face Models</a>
+    ·
     <a href="https://github.com/TheRoboticsClub/gsoc2024-ZebinHuang/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
     ·
     <a href="https://github.com/your_username/repo_name/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
@@ -23,7 +25,7 @@
 
 This project is under construction.
 
-🚀 Project Goal: Integrating Large Language Models with end-to-end autonomous driving models. This project is supported by [2024 Google Summer of Code](https://summerofcode.withgoogle.com/) and [JdeRobot](https://jderobot.github.io/activities/gsoc/2024#ideas-list) .
+🚀 Project Goal: Integrating Large Language Models with end-to-end autonomous driving models. This project is supported by [2024 Google Summer of Code](https://summerofcode.withgoogle.com/) and [JdeRobot](https://jderobot.github.io/activities/gsoc/2024#ideas-list).
 
 ## Getting Started
 
