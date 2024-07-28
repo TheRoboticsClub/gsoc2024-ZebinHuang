@@ -19,7 +19,7 @@ social: true # includes social icons at the bottom of the page
 
 👋 Hi! I'm Zebin Huang, a PhD student at [the Edinburgh Centre for Robotics](https://www.edinburgh-robotics.org/students/zebin-huang). My focus areas are Robotics, Robot Learning, and Human-Machine Interaction.
 
-🚀 Project Goal: Integrating Large Language Models with end-to-end autonomous driving models. This project is supported by [2024 Google Summer of Code](https://summerofcode.withgoogle.com/) and [JdeRobot](https://jderobot.github.io/activities/gsoc/2024#ideas-list) .
+🚀 Project Goal: Integrating Large Language Models with end-to-end autonomous driving models. This project is supported by [2024 Google Summer of Code](https://summerofcode.withgoogle.com/) and [JdeRobot](https://jderobot.github.io/activities/gsoc/2024#ideas-list).
 
 📫 Questions or suggestions? Reach out via email.
 
