@@ -94,91 +94,13 @@ logging_callback = LoggingCallback()
 # progress_bar_callback = ProgressBarCallback()
 
 
-def model_train_tinybert(file_path,
-                         model_name,
-                         output_dir,
-                         logging_dir,
-                         num_train_epochs,
-                         train_batch_size,
-                         eval_batch_size,
-                         progress_bar=None):
-    os.makedirs(logging_dir, exist_ok=True)
+def save_logs(logging_dir, log_df, total_steps, num_train_epochs, cls_report):
+    now = datetime.now()
+    time_str = now.strftime("%Y%m%d%H%M")
+    dir = f'{logging_dir}/log_{time_str}'
+    os.makedirs(dir)
+    st.info(f'log saved in {dir}')
 
-    # Prepare data
-    instructions, labels, uniques = prepare_data(file_path)
-    tokenizer = BertTokenizer.from_pretrained(model_name)
-    encodings = tokenizer(list(instructions), truncation=True, padding=True, max_length=128)
-
-    # Save the label mapping
-    label_mapping = {label: idx for idx, label in enumerate(uniques)}
-    label_mapping_path = os.path.join(output_dir, 'label_mapping.json')
-    label_mapping_path = os.path.normpath(label_mapping_path)
-    with open(label_mapping_path, 'w') as f:
-        json.dump(label_mapping, f)
-
-    # Split data into training and validation sets
-    train_inputs, val_inputs, train_labels, val_labels = train_test_split(
-        encodings['input_ids'], labels, test_size=0.1, random_state=42
-    )
-    train_masks, val_masks = train_test_split(
-        encodings['attention_mask'], test_size=0.1, random_state=42
-    )
-
-    train_encodings = {'input_ids': train_inputs, 'attention_mask': train_masks}
-    val_encodings = {'input_ids': val_inputs, 'attention_mask': val_masks}
-
-    train_dataset = ActionDataset(train_encodings, train_labels)
-    val_dataset = ActionDataset(val_encodings, val_labels)
-
-    # Load model
-    model = BertForSequenceClassification.from_pretrained(model_name, num_labels=len(uniques))
-
-    # Define training arguments
-    training_args = TrainingArguments(
-        output_dir=output_dir,
-        num_train_epochs=num_train_epochs,
-        per_device_train_batch_size=train_batch_size,
-        per_device_eval_batch_size=eval_batch_size,
-        warmup_steps=500,
-        weight_decay=0.01,
-        logging_dir=logging_dir,
-        logging_steps=1,
-        # eval_strategy="steps",
-        log_level='info',
-    )
-    total_steps = (
-        len(train_dataset)
-        // training_args.per_device_train_batch_size
-        * training_args.num_train_epochs
-    )
-    progress_bar_callback = ProgressBarCallback(progress_bar)
-    # Train the model
-    trainer = Trainer(
-        model=model,
-        args=training_args,
-        train_dataset=train_dataset,
-        eval_dataset=val_dataset,
-        callbacks=[logging_callback, progress_bar_callback],
-        compute_metrics=compute_metrics
-    )
-
-    _ = trainer.train()
-
-    # Evaluate the model
-    _ = trainer.evaluate()
-
-    # Predict and report
-    predictions = trainer.predict(val_dataset)
-    pred_labels = np.argmax(predictions.predictions, axis=1)
-    cls_report = classification_report(val_labels, pred_labels, zero_division=0)
-
-    # Save the model
-    model_save_path = os.path.join(output_dir, 'tinybert_model.pt')
-    torch.save(model.state_dict(), model_save_path)
-    # st.write(f"Model saved to {model_save_path}")
-    log_df = pd.DataFrame(logging_callback.log_data)
-
-    # Train log
     train_df = log_df[["loss", "grad_norm", "learning_rate", "epoch"]]
     train_df.dropna(how="any", axis=0, inplace=True)
     eval_df = log_df[
@@ -201,13 +123,6 @@ def model_train_tinybert(file_path,
         ]
     ]
     train_df_ = train_df_.fillna(method="ffill").fillna(method="bfill")
-    log_df = pd.concat([train_df, eval_df, train_df_], axis=1)
-
-    now = datetime.now()
-    time_str = now.strftime("%Y%m%d%H%M")
-    dir = f'{logging_dir}/log_{time_str}'
-    os.makedirs(dir)
-    st.info(f'log saved in {dir}')
 
     log_df.to_excel(f'{dir}/raw.xlsx', index=False)
     train_df.to_excel(f'{dir}/train_df.xlsx', index=False)
@@ -270,7 +185,87 @@ def model_train_tinybert(file_path,
     }
     logs = {"train_log": train_log, "eval_log": eval_log, "cls_report": cls_report}
     with open(f"{dir}/log.json", "w", encoding="utf-8") as f:
-        f.write(json.dumps(logs, ensure_ascii=True, indent=4, separators=(",", ":")))
+        f.write(json.dumps(logs, ensure_ascii=False, indent=4, separators=(",", ":")))
+    return train_log, eval_log
+
+
+def model_train_tinybert(file_path, model_name, output_dir, logging_dir, num_train_epochs,
+                         train_batch_size, eval_batch_size, progress_bar=None):
+    os.makedirs(logging_dir, exist_ok=True)
+
+    # Prepare data
+    instructions, labels, uniques = prepare_data(file_path)
+    tokenizer = BertTokenizer.from_pretrained(model_name)
+    encodings = tokenizer(list(instructions), truncation=True, padding=True, max_length=128)
+
+    # Save the label mapping
+    label_mapping = {label: idx for idx, label in enumerate(uniques)}
+    label_mapping_path = os.path.join(output_dir, 'label_mapping.json')
+    label_mapping_path = os.path.normpath(label_mapping_path)
+    with open(label_mapping_path, 'w') as f:
+        json.dump(label_mapping, f)
+
+    # Split data into training and validation sets
+    train_inputs, val_inputs, train_labels, val_labels = train_test_split(
+        encodings['input_ids'], labels, test_size=0.1, random_state=42
+    )
+    train_masks, val_masks = train_test_split(
+        encodings['attention_mask'], test_size=0.1, random_state=42
+    )
+
+    train_encodings = {'input_ids': train_inputs, 'attention_mask': train_masks}
+    val_encodings = {'input_ids': val_inputs, 'attention_mask': val_masks}
+
+    train_dataset = ActionDataset(train_encodings, train_labels)
+    val_dataset = ActionDataset(val_encodings, val_labels)
+
+    # Load model
+    model = BertForSequenceClassification.from_pretrained(model_name, num_labels=len(uniques))
+
+    # Define training arguments
+    training_args = TrainingArguments(
+        output_dir=output_dir,
+        num_train_epochs=num_train_epochs,
+        per_device_train_batch_size=train_batch_size,
+        per_device_eval_batch_size=eval_batch_size,
+        warmup_steps=500,
+        weight_decay=0.01,
+        logging_dir=logging_dir,
+        logging_steps=1,
+        log_level='info',
+    )
+    total_steps = (
+        len(train_dataset) // training_args.per_device_train_batch_size * training_args.num_train_epochs
+    )
+    progress_bar_callback = ProgressBarCallback(progress_bar)
+    logging_callback = LoggingCallback()
+    trainer = Trainer(
+        model=model,
+        args=training_args,
+        train_dataset=train_dataset,
+        eval_dataset=val_dataset,
+        callbacks=[logging_callback, progress_bar_callback],
+        compute_metrics=compute_metrics
+    )
+
+    _ = trainer.train()
+
+    # Evaluate the model
+    _ = trainer.evaluate()
+
+    # Predict and report
+    predictions = trainer.predict(val_dataset)
+    pred_labels = np.argmax(predictions.predictions, axis=1)
+    cls_report = classification_report(val_labels, pred_labels, zero_division=0)
+
+    # Save the model
+    model_save_path = os.path.join(output_dir, 'tinybert_model.pt')
+    torch.save(model.state_dict(), model_save_path)
+
+    # Train log
+    log_df = pd.DataFrame(logging_callback.log_data)
+    train_log, eval_log = save_logs(logging_dir, log_df, total_steps, num_train_epochs, cls_report)
+
     return train_log, eval_log, cls_report
 
 
