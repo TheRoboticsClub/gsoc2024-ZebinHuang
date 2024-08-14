@@ -29,6 +29,9 @@ def page1():
     st.markdown(
         "<h1 style='text-align: center;'>Data Generation</h1>", unsafe_allow_html=True
     )
+
+    st.write("Working dir:", os.getcwd())
+
     container = st.container(border=True)
 
     col1, col2 = container.columns(2)
