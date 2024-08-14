@@ -54,7 +54,7 @@ def page1():
         with st.spinner("Generating dataset..."):
             load_dotenv()
 
-            api_key = os.getenv("OPENAI_API_KEY")
+            api_key = st.secrets["openai_api_key"]
             if api_key:
                 start_time = time.time()
                 dataset = generate_dataset(
