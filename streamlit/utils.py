@@ -4,11 +4,11 @@ import openai
 from dotenv import load_dotenv
 from xhtml2pdf import pisa
 from settings import VALID_ACTIONS, OPENAI_PARAMS
-
+import streamlit as st
 
 # Load environment variables
 load_dotenv()
-openai.api_key = os.getenv('OPENAI_API_KEY')
+openai.api_key = st.secrets["openai_api_key"]
 
 
 def validate_api_key(api_key):
