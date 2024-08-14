@@ -63,7 +63,7 @@ def page1():
                     model=model,
                     temperature=temperature,
                 )
-                dataset.to_csv(f"datasets/user_instructions/{output_file}", index=False)
+                dataset.to_csv(f"./datasets/user_instructions/{output_file}", index=False)
                 duration = time.time() - start_time
 
                 st.success(f"Dataset generated and saved to '{output_file}'")
@@ -86,7 +86,7 @@ def page2():
     container = st.container(border=True)
 
     # Get all csv dataset files
-    csv_folder = 'datasets/user_instructions'
+    csv_folder = './datasets/user_instructions'
     csv_files = [f for f in os.listdir(csv_folder) if f.endswith('.csv')]
     with container:
         selected_file = st.selectbox("File path", csv_files)
@@ -115,7 +115,7 @@ def page3():
     st.markdown(
         "<h1 style='text-align: center;'>Model Training</h1>", unsafe_allow_html=True
     )
-    csv_folder = 'datasets/user_instructions'
+    csv_folder = './datasets/user_instructions'
     csv_files = [f for f in os.listdir(csv_folder) if f.endswith('.csv')]
 
     # Model and model selection
