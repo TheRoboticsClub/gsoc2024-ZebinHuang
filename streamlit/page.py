@@ -29,7 +29,6 @@ def page1():
     st.markdown(
         "<h1 style='text-align: center;'>Data Generation</h1>", unsafe_allow_html=True
     )
-
     st.write("Working dir:", os.getcwd())
 
     container = st.container(border=True)
@@ -55,7 +54,7 @@ def page1():
         with st.spinner("Generating dataset..."):
             load_dotenv()
 
-            api_key = st.secrets["openai_api_key"]
+            api_key = os.getenv("OPENAI_API_KEY")
             if api_key:
                 start_time = time.time()
                 dataset = generate_dataset(
@@ -66,7 +65,7 @@ def page1():
                     model=model,
                     temperature=temperature,
                 )
-                dataset.to_csv(f"./datasets/user_instructions/{output_file}", index=False)
+                dataset.to_csv(f"./streamlit/datasets/user_instructions/{output_file}", index=False)
                 duration = time.time() - start_time
 
                 st.success(f"Dataset generated and saved to '{output_file}'")
@@ -89,7 +88,7 @@ def page2():
     container = st.container(border=True)
 
     # Get all csv dataset files
-    csv_folder = './datasets/user_instructions'
+    csv_folder = './streamlit/datasets/user_instructions'
     csv_files = [f for f in os.listdir(csv_folder) if f.endswith('.csv')]
     with container:
         selected_file = st.selectbox("File path", csv_files)
@@ -118,7 +117,7 @@ def page3():
     st.markdown(
         "<h1 style='text-align: center;'>Model Training</h1>", unsafe_allow_html=True
     )
-    csv_folder = './datasets/user_instructions'
+    csv_folder = './streamlit/datasets/user_instructions'
     csv_files = [f for f in os.listdir(csv_folder) if f.endswith('.csv')]
 
     # Model and model selection
@@ -136,8 +135,8 @@ def page3():
 
     # Directories
     col1, col2 = st.columns(2)
-    output_dir = col1.text_input("Output directory", value='./models')
-    logging_dir = col2.text_input("Logging directory", value='./logs')
+    output_dir = col1.text_input("Output directory", value='./streamlit/models')
+    logging_dir = col2.text_input("Logging directory", value='./streamlit/logs')
 
     # Start button
     if st.button("START", use_container_width=True):
@@ -171,7 +170,7 @@ def page4():
 
     st.markdown("<h1 style='text-align: center;'>Check Logs</h1>", unsafe_allow_html=True)
 
-    logs_folder = 'logs'
+    logs_folder = './streamlit/logs'
     subfolders = [f.name for f in os.scandir(logs_folder) if f.is_dir()]
 
     if not subfolders:
@@ -303,12 +302,12 @@ def page5():
     # Select test mode
     test_type = st.sidebar.radio("Select Test Type", ("Instruction", "File"))
 
-    model_path = st.text_input("Model path", value="./models/checkpoint-1000")
+    model_path = st.text_input("Model path", value="./streamlit/models/checkpoint-1000")
     tokenizer_name = st.text_input(
         "Tokenizer name", value="huawei-noah/TinyBERT_General_4L_312D"
     )
     label_mapping_path = st.text_input(
-        "Label mapping path", value="./models/label_mapping.json"
+        "Label mapping path", value="./streamlit/models/label_mapping.json"
     )
 
     if test_type == "Instruction":
