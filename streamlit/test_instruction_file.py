@@ -1,8 +1,7 @@
+import json
+import io
 import torch
 from transformers import BertTokenizer, BertForSequenceClassification
-import argparse
-import json
-import os
 
 
 def load_instructions(file_path):
@@ -13,6 +12,26 @@ def load_instructions(file_path):
     lines = []
     with open(file_path, 'r') as file:
         for line in file:
+            parts = line.strip().split('" "')
+            if len(parts) == 2:
+                instruction1 = parts[0].strip('"')
+                instruction2 = parts[1].strip('"')
+                instructions.append(instruction1)
+                instructions.append(instruction2)
+                lines.append(line.strip())
+    return instructions, lines
+
+
+def load_instructions_stream(file_stream):
+    """
+    Load instructions from the provided file stream.
+    """
+    instructions = []
+    lines = []
+
+    # Use io.TextIOWrapper to convert the byte stream to a text stream
+    with io.TextIOWrapper(file_stream, encoding='utf-8') as text_stream:
+        for line in text_stream:
             parts = line.strip().split('" "')
             if len(parts) == 2:
                 instruction1 = parts[0].strip('"')
@@ -60,29 +79,22 @@ def save_predictions(lines, predictions, output_file):
     print(f"Predictions saved to {output_file}")
 
 
-def main():
-    parser = argparse.ArgumentParser(description="Test a trained TinyBERT model for a list of instructions.")
-    parser.add_argument('--file_path', type=str, required=True, help="Path to the instruction file.")
-    parser.add_argument('--model_path', type=str, required=True, help="Path to the trained model directory.")
-    parser.add_argument('--tokenizer_name', type=str, default='huawei-noah/TinyBERT_General_4L_312D', help="Tokenizer name or path.")
-    parser.add_argument('--label_mapping_path', type=str, required=True, help="Path to the label mapping JSON file.")
-    args = parser.parse_args()
-
+def test_file(upload_file, tokenizer_name, model_path, label_mapping_path):
     # Load the instruction file
-    instructions, lines = load_instructions(args.file_path)
+    instructions, lines = load_instructions_stream(upload_file)
 
     # Load the tokenizer
-    tokenizer = BertTokenizer.from_pretrained(args.tokenizer_name)
+    tokenizer = BertTokenizer.from_pretrained(tokenizer_name)
 
     # Load the model
-    model = BertForSequenceClassification.from_pretrained(args.model_path)
+    model = BertForSequenceClassification.from_pretrained(model_path)
 
     # Ensure the model and inputs are on the same device
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
     model.to(device)
 
     # Load label mapping
-    with open(args.label_mapping_path, 'r') as f:
+    with open(label_mapping_path, 'r') as f:
         label_mapping = json.load(f)
     label_mapping = {int(v): k for k, v in label_mapping.items()}
 
@@ -90,9 +102,6 @@ def main():
     predictions = classify_instructions(instructions, model, tokenizer, label_mapping, device)
 
     # Save the results to a new text file
-    output_file = os.path.splitext(args.file_path)[0] + "_pred.txt"
-    save_predictions(lines, predictions, output_file)
-
-
-if __name__ == '__main__':
-    main()
+    save_path = 'datasets/translated_test_suites/result.txt'
+    save_predictions(lines, predictions, save_path)
+    return save_path

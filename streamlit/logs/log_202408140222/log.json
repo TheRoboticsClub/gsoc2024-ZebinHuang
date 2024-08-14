@@ -1,0 +1,22 @@
+{
+    "train_log":{
+        "global_step":1350,
+        "train_loss":0.257267254043405,
+        "metrics":{
+            "train_runtime":57.4874,
+            "train_samples_per_second":187.867,
+            "train_steps_per_second":23.483,
+            "total_flos":7865097926400.0,
+            "train_loss":0.257267254043405,
+            "epoch":3
+        }
+    },
+    "eval_log":{
+        "eval_loss":0.020486677065491676,
+        "eval_runtime":0.5537,
+        "eval_samples_per_second":722.477,
+        "eval_steps_per_second":45.155,
+        "epoch":3
+    },
+    "cls_report":"              precision    recall  f1-score   support\n\n           0       1.00      1.00      1.00       107\n           1       1.00      1.00      1.00        99\n           2       1.00      0.99      0.99        95\n           3       0.99      1.00      0.99        99\n\n    accuracy                           1.00       400\n   macro avg       1.00      1.00      1.00       400\nweighted avg       1.00      1.00      1.00       400\n"
+}
