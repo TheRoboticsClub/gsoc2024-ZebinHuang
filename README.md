@@ -11,7 +11,7 @@
     <a href="https://theroboticsclub.github.io/gsoc2024-ZebinHuang/"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/TheRoboticsClub/gsoc2024-ZebinHuang">View Demo (Upcoming)</a>
+    <a href="https://gsoc24-zebinhuang.streamlit.app/">View Demo</a>
     ·
     <a href="https://huggingface.co/zebin-huang/gsoc2024-ZebinHuang">Hugging Face Models</a>
     ·
