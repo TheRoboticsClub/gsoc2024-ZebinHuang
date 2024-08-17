@@ -18,15 +18,15 @@ def test_instruction(instruction, tokenizer_name, model_path, label_mapping_path
         label_mapping = json.load(f)
     label_mapping = {int(v): k for k, v in label_mapping.items()}
 
+    # Ensure the model and inputs are on the same device
+    device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+    encodings = {key: val.to(device) for key, val in encodings.items()}
+
     # Dynamically determine the number of labels based on the label mapping
     num_labels = len(label_mapping)
     model = BertForSequenceClassification.from_pretrained(tokenizer_name, num_labels=num_labels)
-    model.load_state_dict(torch.load(model_path))
-
-    # Ensure the model and inputs are on the same device
-    device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+    model.load_state_dict(torch.load(model_path, map_location=device))
     model.to(device)
-    encodings = {key: val.to(device) for key, val in encodings.items()}
 
     # Load label mapping
     with open(label_mapping_path, 'r') as f:
