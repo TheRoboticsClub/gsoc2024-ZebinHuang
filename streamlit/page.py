@@ -325,9 +325,18 @@ def page5():
     st.container(border=True)
 
     # Select test mode
-    test_type = st.sidebar.radio("Select Test Type", ("Instruction", "File"))
+    with st.sidebar:
+        test_type = st.radio("Select Test Type", ("Instruction", "File"))
+        st.markdown(
+            "[Download the test dataset](https://github.com/TheRoboticsClub/gsoc2024-ZebinHuang/tree/main/data_parsing/datasets)",
+            unsafe_allow_html=True,
+        )
+        st.markdown(
+            "⚠️ **Warning:** If you are not sure about what you are doing, please do not modify the `Model path` and `Label mapping path`. These paths are already configured on the server.",
+            unsafe_allow_html=True,
+        )
 
-    model_path = st.text_input("Model path", value="./streamlit/models/checkpoint-1000")
+    model_path = st.text_input("Model path", value="./streamlit/models/tinybert_model.pt")
     tokenizer_name = st.text_input(
         "Tokenizer name", value="huawei-noah/TinyBERT_General_4L_312D"
     )
