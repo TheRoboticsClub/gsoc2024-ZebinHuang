@@ -7,7 +7,7 @@ import json
 
 import pandas as pd
 from dataset_generator_batch_optimized import generate_dataset
-from dotenv import load_dotenv
+from dotenv import load_dotenv, set_key
 from instruction_analysis import analysis
 from markdown import markdown
 from settings import OPENAI_MODELS, VALID_ACTIONS
@@ -19,12 +19,36 @@ from train_model_tinybert import (
     plot_eval_logs,
     generate_markdown,
 )
-from utils import convert_html_to_pdf
+from utils import convert_html_to_pdf, validate_api_key
 import streamlit as st
 
 
 def page1():
     """Page 1: Data generation"""
+
+    # Using demo from https://github.com/streamlit/llm-examples/blob/main/Chatbot.py
+    with st.sidebar:
+        api_key = st.text_input("OpenAI API Key", key="chatbot_api_key", type="password")
+
+        if st.button("Validate API Key"):
+            if validate_api_key(api_key):
+                st.success("API Key is valid!")
+                set_key(".env", "OPENAI_API_KEY", api_key)  # Save the API key to .env file
+            else:
+                st.error("Invalid API Key. Please try again.")
+
+        st.markdown(
+            "[Get an OpenAI API key](https://platform.openai.com/account/api-keys)",
+            unsafe_allow_html=True,
+        )
+        st.markdown(
+            "[View the source code](https://github.com/TheRoboticsClub/gsoc2024-ZebinHuang)",
+            unsafe_allow_html=True,
+        )
+        st.markdown(
+            "[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/TheRoboticsClub/gsoc2024-ZebinHuang?quickstart=1)",
+            unsafe_allow_html=True,
+        )
 
     st.markdown(
         "<h1 style='text-align: center;'>Data Generation</h1>", unsafe_allow_html=True
@@ -54,7 +78,8 @@ def page1():
         with st.spinner("Generating dataset..."):
             load_dotenv()
 
-            api_key = st.secrets["openai_api_key"]
+            # Comment for using input API key
+            # api_key = st.secrets["openai_api_key"]
             if api_key:
                 start_time = time.time()
                 dataset = generate_dataset(
@@ -74,7 +99,7 @@ def page1():
                 with st.expander("Generated dataset"):
                     st.dataframe(dataset)
             else:
-                st.error("API key not found. Please check your .env file.")
+                st.error("Please add your OpenAI API key to continue.")
 
 
 def page2():
