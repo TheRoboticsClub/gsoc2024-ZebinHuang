@@ -23,9 +23,31 @@ from utils import convert_html_to_pdf, validate_api_key
 import streamlit as st
 
 
-def page1():
-    """Page 1: Data generation"""
+def render_common_links():
+    st.markdown(
+        "[Get an OpenAI API key](https://platform.openai.com/account/api-keys)",
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        "[View the source code](https://github.com/TheRoboticsClub/gsoc2024-ZebinHuang)",
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        (
+            "[![Open in GitHub Codespaces]"
+            "(https://github.com/codespaces/badge.svg)]"
+            "(https://codespaces.new/TheRoboticsClub/gsoc2024-ZebinHuang?quickstart=1)"
+        ),
+        unsafe_allow_html=True,
+    )
 
+
+def page1():
+    """Page 1: Data generation
+    This page allows users to generate datasets using specified OpenAI models and settings.
+    """
+
+    # Load the API key
     # Using demo from https://github.com/streamlit/llm-examples/blob/main/Chatbot.py
     with st.sidebar:
         api_key = st.text_input("OpenAI API Key", key="chatbot_api_key", type="password")
@@ -37,23 +59,13 @@ def page1():
             else:
                 st.error("Invalid API Key. Please try again.")
 
-        st.markdown(
-            "[Get an OpenAI API key](https://platform.openai.com/account/api-keys)",
-            unsafe_allow_html=True,
-        )
-        st.markdown(
-            "[View the source code](https://github.com/TheRoboticsClub/gsoc2024-ZebinHuang)",
-            unsafe_allow_html=True,
-        )
-        st.markdown(
-            "[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/TheRoboticsClub/gsoc2024-ZebinHuang?quickstart=1)",
-            unsafe_allow_html=True,
-        )
+        render_common_links()
 
     st.markdown(
         "<h1 style='text-align: center;'>Data Generation</h1>", unsafe_allow_html=True
     )
-    st.write("Working dir:", os.getcwd())
+
+    # st.write("Working dir:", os.getcwd())
 
     container = st.container(border=True)
 
@@ -78,9 +90,8 @@ def page1():
         with st.spinner("Generating dataset..."):
             load_dotenv()
 
-            # Comment for using input API key
-            # api_key = st.secrets["openai_api_key"]
             if api_key:
+                # Start dataset generation
                 start_time = time.time()
                 dataset = generate_dataset(
                     actions=actions,
@@ -103,7 +114,9 @@ def page1():
 
 
 def page2():
-    """ Page 2: Data analysis """
+    """Page 2: Data analysis
+    This page provides options to analyze the generated datasets.
+    """
 
     st.markdown(
         "<h1 style='text-align: center;'>Data Analysis</h1>", unsafe_allow_html=True
@@ -137,7 +150,9 @@ def page2():
 
 
 def page3():
-    """Page 3: Model Training"""
+    """Page 3: Model Training
+    Allows users to configure and train a model using a selected dataset. Displays training progress and logs.
+    """
 
     st.markdown(
         "<h1 style='text-align: center;'>Model Training</h1>", unsafe_allow_html=True
@@ -190,8 +205,98 @@ def page3():
             st.warning("Bert mode is not yet implemented.")
 
 
+def load_log_files(folder_path):
+    """Load the log files from the specified folder path."""
+    train_log_path = os.path.join(folder_path, "train_df.xlsx")
+    train_log_path_ = os.path.join(folder_path, "train_df_.xlsx")
+    eval_log_path = os.path.join(folder_path, "eval_df.xlsx")
+    log_path = os.path.join(folder_path, "log.json")
+
+    if (
+        os.path.exists(train_log_path)
+        and os.path.exists(train_log_path_)
+        and os.path.exists(eval_log_path)
+    ):
+        return train_log_path, train_log_path_, eval_log_path, log_path
+    else:
+        return None, None, None, None
+
+
+def generate_pdf_report(train_fig, eval_fig, train_log, eval_log, cls_report, folder_path):
+    """Convert logs and figures into an HTML and generate a PDF report."""
+
+    # Convert train figure to base64
+    buffer1 = io.BytesIO()
+    train_fig.savefig(buffer1, format='png')
+    buffer1.seek(0)
+    train_base64 = base64.b64encode(buffer1.read()).decode('utf-8')
+    train_img_html = (
+        f'<img src="data:image/png;base64,{train_base64}" '
+        'style="width: 80%; max-width: 800px;"/>'
+    )
+
+    # Convert eval figure to base64
+    buffer2 = io.BytesIO()
+    eval_fig.savefig(buffer2, format='png')
+    buffer2.seek(0)
+    eval_base64 = base64.b64encode(buffer2.read()).decode('utf-8')
+    eval_img_html = (
+        f'<img src="data:image/png;base64,{eval_base64}" '
+        'style="width: 80%; max-width: 800px;"/>'
+    )
+
+    # Generate markdown for logs
+    train_log_md, eval_log_md, cls_report_md = generate_markdown(
+        train_log, eval_log, cls_report
+    )
+    train_html, eval_html, _ = (
+        markdown(train_log_md),
+        markdown(eval_log_md),
+        markdown(cls_report_md),
+    )
+
+    # Create HTML content
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Markdown</title>
+        <style>
+            body {{
+                font-size: 14px;
+                line-height: 1;
+                margin: 10px;
+                font-family: Arial, sans-serif;
+            }}
+            img {{
+                display: block;
+                margin: 10px auto;
+            }}
+            .page-break {{
+                page-break-before: always;
+            }}
+        </style>
+    </head>
+    <body>
+        {train_html}
+        {train_img_html}
+        {eval_html}
+        {eval_img_html}
+
+    </body>
+    </html>
+    """
+
+    # Convert HTML to PDF
+    pdf_path = os.path.join(folder_path, "logs_report.pdf")
+    convert_html_to_pdf(html_content, pdf_path)
+    return pdf_path
+
+
 def page4():
-    """ Page 4: Log analysis """
+    """Page 4: Log Analysis
+    Enables users to visualize and analyze training and evaluation logs.
+    """
 
     st.markdown("<h1 style='text-align: center;'>Check Logs</h1>", unsafe_allow_html=True)
 
@@ -208,16 +313,10 @@ def page4():
         folder_path = os.path.join(logs_folder, selected_folder)
 
     if st.button("Load Log"):
-        train_log_path = os.path.join(folder_path, "train_df.xlsx")
-        train_log_path_ = os.path.join(folder_path, "train_df_.xlsx")
-        eval_log_path = os.path.join(folder_path, "eval_df.xlsx")
-        log_path = os.path.join(folder_path, "log.json")
+        # Load log files
+        train_log_path, train_log_path_, eval_log_path, log_path = load_log_files(folder_path)
 
-        if (
-            os.path.exists(train_log_path)
-            and os.path.exists(train_log_path_)
-            and os.path.exists(eval_log_path)
-        ):
+        if train_log_path and train_log_path_ and eval_log_path:
             # Read metrics data
             train_df = pd.read_excel(train_log_path)
             train_df_ = pd.read_excel(train_log_path_)
@@ -227,30 +326,6 @@ def page4():
             train_fig = plot_combined_train_logs(train_df, train_df_)
             eval_fig = plot_eval_logs(eval_df)
 
-            # Markdown to html
-            buffer1 = io.BytesIO()
-            train_fig.savefig(buffer1, format='png')
-            buffer1.seek(0)
-            train_base64 = base64.b64encode(buffer1.read()).decode('utf-8')
-            train_img_html = (
-                f'<img src="data:image/png;base64,{train_base64}" '
-                'style="width: 80%; max-width: 800px;"/>'
-            )
-
-            buffer2 = io.BytesIO()
-            eval_fig.savefig(buffer2, format='png')
-            buffer2.seek(0)
-            eval_base64 = base64.b64encode(buffer2.read()).decode('utf-8')
-            eval_img_html = (
-                f'<img src="data:image/png;base64,{eval_base64}" '
-                'style="width: 80%; max-width: 800px;"/>'
-            )
-
-            st.markdown("<h2>TrainLog</h2>", unsafe_allow_html=True)
-            st.pyplot(train_fig)
-            st.markdown("<h2>EvalLog</h2>", unsafe_allow_html=True)
-            st.pyplot(eval_fig)
-
             # Load and Eval log
             with open(log_path, 'r', encoding='utf-8') as f:
                 logs = json.loads(f.read())
@@ -259,47 +334,18 @@ def page4():
                 logs['eval_log'],
                 logs['cls_report'],
             )
-            if train_log and eval_log and cls_report:
-                train_log_md, eval_log_md, cls_report_md = generate_markdown(
-                    train_log, eval_log, cls_report
-                )
-                train_html, eval_html, _ = (
-                    markdown(train_log_md),
-                    markdown(eval_log_md),
-                    markdown(cls_report_md),
-                )
-                html_content = f"""
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>Markdown</title>
-                    <style>
-                        body {{
-                            font-size: 14px;
-                            line-height: 1;
-                            margin: 10px;
-                            font-family: Arial, sans-serif;
-                        }}
-                        img {{
-                            display: block;
-                            margin: 10px auto;
-                        }}
-                        .page-break {{
-                            page-break-before: always;
-                        }}
-                    </style>
-                </head>
-                <body>
-                    {train_html}
-                    {train_img_html}
-                    {eval_html}
-                    {eval_img_html}
 
-                </body>
-                </html>
-                """
-                pdf_path = os.path.join(folder_path, "logs_report.pdf")
-                convert_html_to_pdf(html_content, pdf_path)
+            if train_log and eval_log and cls_report:
+                # Generate PDF report
+                pdf_path = generate_pdf_report(train_fig, eval_fig, train_log, eval_log, cls_report, folder_path)
+
+                # Display figures
+                st.markdown("<h2>TrainLog</h2>", unsafe_allow_html=True)
+                st.pyplot(train_fig)
+                st.markdown("<h2>EvalLog</h2>", unsafe_allow_html=True)
+                st.pyplot(eval_fig)
+
+                # Provide download button for the PDF report
                 with open(pdf_path, "rb") as f:
                     st.download_button(
                         "Download Log",
@@ -318,7 +364,9 @@ def page4():
 
 
 def page5():
-    """ Page 5: Model testing """
+    """ Page 5: Model testing
+    This page allows users to test a trained model either by inputting an instruction or uploading a file.
+    """
 
     st.markdown("<h1 style='text-align: center;'>Model Test</h1>", unsafe_allow_html=True)
 
@@ -328,11 +376,19 @@ def page5():
     with st.sidebar:
         test_type = st.radio("Select Test Type", ("Instruction", "File"))
         st.markdown(
-            "[Download the test dataset](https://github.com/TheRoboticsClub/gsoc2024-ZebinHuang/tree/main/data_parsing/datasets)",
+            (
+                "[Download the test dataset]"
+                "(https://github.com/TheRoboticsClub/gsoc2024-ZebinHuang/tree/main/data_parsing/datasets)"
+            ),
             unsafe_allow_html=True,
         )
+
         st.markdown(
-            "⚠️ **Warning:** If you are not sure about what you are doing, please do not modify the `Model path` and `Label mapping path`. These paths are already configured on the server.",
+            (
+                "⚠️ **Warning:** If you are not sure about what you are doing, "
+                "please do not modify the `Model path` and `Label mapping path`. "
+                "These paths are already configured on the server."
+            ),
             unsafe_allow_html=True,
         )
 
@@ -364,6 +420,7 @@ def page5():
                     "TEST", use_container_width=True
                 )
                 if test_button:
+                    # Process the uploaded file and save the test results
                     save_path = test_file(
                         uploaded_file, tokenizer_name, model_path, label_mapping_path
                     )
@@ -372,7 +429,7 @@ def page5():
                     with open(save_path, 'r') as file:
                         result_data = file.read()
 
-                    # DownLoad result
+                    # Provide download link for the result file
                     st.download_button(
                         label="Download Result",
                         data=result_data,
