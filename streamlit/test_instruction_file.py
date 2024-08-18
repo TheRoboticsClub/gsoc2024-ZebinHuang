@@ -94,10 +94,8 @@ def test_file(upload_file, tokenizer_name, model_path, label_mapping_path):
     # Dynamically determine the number of labels based on the label mapping
     num_labels = len(label_mapping)
     model = BertForSequenceClassification.from_pretrained(tokenizer_name, num_labels=num_labels)
-    model.load_state_dict(torch.load(model_path))
-
-    # Ensure the model and inputs are on the same device
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+    model.load_state_dict(torch.load(model_path, map_location=device))
     model.to(device)
 
     # Classify the instructions
