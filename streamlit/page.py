@@ -65,8 +65,6 @@ def page1():
         "<h1 style='text-align: center;'>Data Generation</h1>", unsafe_allow_html=True
     )
 
-    # st.write("Working dir:", os.getcwd())
-
     container = st.container(border=True)
 
     col1, col2 = container.columns(2)
@@ -89,7 +87,6 @@ def page1():
         progress_bar = st.progress(0)
         with st.spinner("Generating dataset..."):
             load_dotenv()
-
             if api_key:
                 # Start dataset generation
                 start_time = time.time()

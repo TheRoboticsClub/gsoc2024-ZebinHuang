@@ -158,7 +158,6 @@ cython_debug/
 # Ignore all contents in the models directory
 models/*
 
-# But do not ignore label_mapping.json
 !models/label_mapping.json
 !models/tinybert_model.pt
 
