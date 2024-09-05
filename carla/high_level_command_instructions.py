@@ -16,11 +16,20 @@ class HighLevelCommandLoader:
     def initialize_model(self, model_path, tokenizer_name, label_mapping_path):
         self.device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
         self.tokenizer = BertTokenizer.from_pretrained(tokenizer_name)
-        self.model = BertForSequenceClassification.from_pretrained(model_path).to(self.device)
-
         with open(label_mapping_path, 'r') as f:
-            self.label_mapping = json.load(f)
-        self.label_mapping = {int(v): k for k, v in self.label_mapping.items()}
+            label_mapping = json.load(f)
+        self.label_mapping = {int(v): k for k, v in label_mapping.items()}
+
+        num_labels = len(self.label_mapping)
+
+        # Load the pre-trained model with the appropriate number of labels
+        self.model = BertForSequenceClassification.from_pretrained(
+            tokenizer_name,
+            num_labels=num_labels
+        ).to(self.device)
+
+        self.model.load_state_dict(torch.load(model_path, map_location=self.device))
+        self.model.eval()
 
     def _get_junction(self):
         """Determine whether vehicle is at junction"""
@@ -104,9 +113,9 @@ class HighLevelCommandLoader:
                 if len(self.route) == 0:
                     return None
                 instruction = self.route.pop(0)
-                logging.info(f'User instructions: {instruction}')
-                logging.info(f'Predicted action: {self._predict_instruction(instruction)}')
-                logging.info(f'Action index: {self._command_to_int(self._predict_instruction(instruction))}')
+                logging.info('User instructions: %s', instruction)
+                logging.info('Predicted action: %s', self._predict_instruction(instruction))
+                logging.info('Action index: %s', self._command_to_int(self._predict_instruction(instruction)))
                 hlc = self._command_to_int(self._predict_instruction(instruction))
             else:
                 hlc = self.prev_hlc

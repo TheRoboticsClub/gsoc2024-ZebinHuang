@@ -24,6 +24,6 @@ wget -O high_level_command_instructions.py https://raw.githubusercontent.com/The
 ./CarlaUE4.sh
 
 # Evaluate the model with the following command:
-python evaluate_model_instructions.py --episode_file ./datasets/translated_test_suites/Town02_All.txt --model "ModifiedDeepestLSTMTinyPilotNet/models/v10.0.pth" --n_episodes 100 --combined_control --bert_model_path ./models/checkpoint-1000 --tokenizer_name huawei-noah/TinyBERT_General_4L_312D --label_mapping_path ./models/label_mapping.json
+python evaluate_model_instructions.py --episode_file ./datasets/translated_test_suites/Town02_All.txt --model "ModifiedDeepestLSTMTinyPilotNet/models/v10.0.pth" --n_episodes 100 --combined_control --bert_model_path ./models/tinybert_model.pt --tokenizer_name huawei-noah/TinyBERT_General_4L_312D --label_mapping_path ./models/label_mapping.json
 ```
 The datasets are from the data_parsing folder, and the model files have been uploaded to Hugging Face (see main README).
