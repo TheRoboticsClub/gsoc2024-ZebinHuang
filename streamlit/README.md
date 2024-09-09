@@ -25,4 +25,4 @@ streamlit run streamlit/main.py
 ```
 
 - The model training process may be slow due to the limitations of Streamlit Community Cloud.
-- The model used for testing is large and is hosted using GitHub LFS. For more details, you can also check the [Hugging Face models](https://huggingface.co/zebin-huang/gsoc2024-ZebinHuang/tree/main).
+- The model used for testing is large and is hosted using git lfs. For more details, you can also check the [Hugging Face models](https://huggingface.co/zebin-huang/gsoc2024-ZebinHuang/tree/main).
