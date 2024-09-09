@@ -8,7 +8,7 @@ import streamlit as st
 
 # Load environment variables
 load_dotenv()
-openai.api_key = st.secrets["openai_api_key"]
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
 def validate_api_key(api_key):
@@ -28,25 +28,6 @@ def validate_api_key(api_key):
         return True
     except openai.APIError as e:
         print(f"OpenAI API returned an API Error: {e}")
-
-
-# Validate the API key
-if not validate_api_key(openai.api_key):
-    print("Invalid API key. Please check your .env file.")
-    exit(1)
-
-
-# def generate_instruction_prompt(action):
-#     """
-#     Generate a prompt for the OpenAI API to create a driving instruction for a given action.
-#     """
-#     return f"""
-#     Generate a short driving instruction that includes the action '{action}'. Here are three examples:
-#     1. "Turn right at the next intersection."
-#     2. "Go straight past the traffic light."
-#     3. "Merge into the left lane."
-#     Generate an instruction that includes '{action}':
-#     """
 
 
 def generate_instruction_prompt(action, batch_size):

@@ -86,22 +86,22 @@ def test_file(upload_file, tokenizer_name, model_path, label_mapping_path):
     # Load the tokenizer
     tokenizer = BertTokenizer.from_pretrained(tokenizer_name)
 
-    # Load the model
-    model = BertForSequenceClassification.from_pretrained(model_path)
-
-    # Ensure the model and inputs are on the same device
-    device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
-    model.to(device)
-
-    # Load label mapping
+    # Load label mapping from the provided path
     with open(label_mapping_path, 'r') as f:
         label_mapping = json.load(f)
     label_mapping = {int(v): k for k, v in label_mapping.items()}
+
+    # Dynamically determine the number of labels based on the label mapping
+    num_labels = len(label_mapping)
+    model = BertForSequenceClassification.from_pretrained(tokenizer_name, num_labels=num_labels)
+    device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+    model.load_state_dict(torch.load(model_path, map_location=device))
+    model.to(device)
 
     # Classify the instructions
     predictions = classify_instructions(instructions, model, tokenizer, label_mapping, device)
 
     # Save the results to a new text file
-    save_path = 'datasets/translated_test_suites/result.txt'
+    save_path = './streamlit/datasets/translated_test_suites/result.txt'
     save_predictions(lines, predictions, save_path)
     return save_path
