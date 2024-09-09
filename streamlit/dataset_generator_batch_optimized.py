@@ -1,11 +1,5 @@
-import os
 import pandas as pd
-from tqdm import tqdm
-from dotenv import load_dotenv
-import time
-import argparse
 from utils import generate_instructions_batch
-from settings import VALID_ACTIONS
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 
@@ -19,7 +13,7 @@ def clean_instruction(instruction):
     return f'"{instruction}"'
 
 
-def generate_dataset(actions, num_samples_per_action=25, max_batch_size=50, num_threads=20):
+def generate_dataset(actions, num_samples_per_action=25, max_batch_size=50, num_threads=20, progress_bar=None, **custom_params):
     """
     Generate a dataset of driving instructions for the given actions.
     """
@@ -37,15 +31,21 @@ def generate_dataset(actions, num_samples_per_action=25, max_batch_size=50, num_
             if running_tasks < num_threads:
                 for action in actions:
                     if len(unique_instructions_per_action[action]) < num_samples_per_action:
-                        remaining_samples = max(num_samples_per_action - len(unique_instructions_per_action[action]), 5)
+                        remaining_samples = max(
+                            num_samples_per_action - len(unique_instructions_per_action[action]), 5
+                        )
                         batch_size = min(remaining_samples * 2, max_batch_size)
-                        print(f"Submitting batch generation for action '{action}' with batch size {batch_size}")
-                        future = executor.submit(generate_instructions_batch, action, batch_size)
+                        print(
+                            f"Submitting batch generation for action '{action}' with batch size {batch_size}"
+                        )
+                        future = executor.submit(
+                            generate_instructions_batch, action, batch_size, **custom_params
+                        )
                         future_to_action[future] = action
 
             # Collect results as tasks complete
             for future in as_completed(future_to_action):
-                action = future_to_action[future]
+                action = future_to_action.pop(future)
                 try:
                     batch_instructions = future.result()
                     initial_size = len(unique_instructions_per_action[action])
@@ -53,12 +53,24 @@ def generate_dataset(actions, num_samples_per_action=25, max_batch_size=50, num_
                     new_size = len(unique_instructions_per_action[action])
                     discarded = batch_size - (new_size - initial_size)
                     total_discarded += discarded
-                    print(f"Action '{action}': Generated {new_size} / {num_samples_per_action} unique instructions (Discarded {discarded} duplicates)")
-                    if len(unique_instructions_per_action[action]) > num_samples_per_action:
-                        unique_instructions_per_action[action] = set(list(unique_instructions_per_action[action])[:num_samples_per_action])
+                    print(
+                        f"Action '{action}': Generated {new_size} / {num_samples_per_action} "
+                        f"unique instructions (Discarded {discarded} duplicates)"
+                    )
+                    if len(unique_instructions_per_action[action]) >= num_samples_per_action:
+                        unique_instructions_per_action[action] = set(
+                            list(unique_instructions_per_action[action])[:num_samples_per_action]
+                        )
                 except Exception as exc:
                     print(f"An error occurred for action '{action}': {exc}")
-                del future_to_action[future]
+
+                # Update progress bar
+                total_instructions = sum(len(unique_instructions_per_action[action]) for action in actions)
+                total_required_samples = num_samples_per_action * len(actions)
+                total_progress = total_instructions / total_required_samples if total_required_samples > 0 else 0
+                if progress_bar:
+                    progress_bar.progress(total_progress)
+
                 # Break early if we've already met the required number of samples for the current action
                 if len(unique_instructions_per_action[action]) >= num_samples_per_action:
                     break
@@ -70,30 +82,3 @@ def generate_dataset(actions, num_samples_per_action=25, max_batch_size=50, num_
 
     print(f"Total discarded (duplicate) instructions: {total_discarded}")
     return pd.DataFrame(data, columns=['instruction', 'action'])
-
-
-def main():
-    parser = argparse.ArgumentParser(description="Generate a dataset of driving instructions.")
-    parser.add_argument('--actions', nargs='+', default=VALID_ACTIONS, help="List of actions to generate instructions for.")
-    parser.add_argument('--num_samples', type=int, default=25, help="Number of unique samples per action.")
-    parser.add_argument('--output_file', type=str, default='dataset.csv', help="Output CSV file to save the dataset.")
-    parser.add_argument('--max_batch_size', type=int, default=50, help="Maximum batch size for generating instructions.")
-    args = parser.parse_args()
-
-    load_dotenv()
-    api_key = os.getenv("OPENAI_API_KEY")
-
-    if api_key:
-        start_time = time.time()
-        dataset = generate_dataset(args.actions, args.num_samples, args.max_batch_size)
-        print(dataset)
-        dataset.to_csv(args.output_file, index=False)
-        print(f"Dataset generated and saved to '{args.output_file}'")
-        duration = time.time() - start_time
-        print(f"Generated {len(dataset)} instructions in {duration:.2f} seconds.")
-    else:
-        print("API key not found. Please check your .env file.")
-
-
-if __name__ == "__main__":
-    main()

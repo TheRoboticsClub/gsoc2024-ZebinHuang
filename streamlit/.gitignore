@@ -155,4 +155,11 @@ cython_debug/
 # Poetry
 .poetry/
 
-models/
+# Ignore all contents in the models directory
+models/*
+
+!models/label_mapping.json
+!models/tinybert_model.pt
+
+logs/
+results/

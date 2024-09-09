@@ -1,0 +1,11 @@
+instruction,action
+"""Transition to the right as you come upon the hospital.""",['Right']
+"""Deviate to the right at the old church.""",['Right']
+"""Tack to the right past the cinema.""",['Right']
+"""Veer to the right when you see the gas station.""",['Right']
+"""Bank right when you see the blue building.""",['Right']
+"""Make a starboard turn at the stop sign.""",['Right']
+"""Divert to the right when you reach the pedestrian crossing.""",['Right']
+"""Pivot right after the subway station.""",['Right']
+"""Twist towards the right as you exit the freeway.""",['Right']
+"""Redirect to the right just before the café.""",['Right']
