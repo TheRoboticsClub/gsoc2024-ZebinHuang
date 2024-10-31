@@ -13,7 +13,7 @@ authors:
     affiliations:
       name: Edinburgh Centre for Robotics
 
-bibliography: posts.bib
+bibliography: bonding_week.bib
 ---
 
 
