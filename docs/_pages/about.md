@@ -2,11 +2,11 @@
 layout: about
 title: about
 permalink: /
-subtitle: End-to-end autonomous vehicle driving based on text-based instructions
+# subtitle: End-to-end autonomous vehicle driving based on text-based instructions
 
 profile:
   align: right
-  image: jderobot_gsoc.jpg
+  # image: jderobot_gsoc.jpg
   image_circular: false # crops the image to make it circular
   more_info: >
 
@@ -14,6 +14,30 @@ news: true # includes a list of news items
 selected_papers: true # includes a list of papers marked as "selected={true}"
 social: true # includes social icons at the bottom of the page
 ---
+
+<div style="text-align: center;">
+    Mentors:
+    <a href="mailto:sergiopaniegoblanco@gmail.com">Sergio Paniego Blanco</a>,
+    <a href="mailto:apoorvgarg.ms@gmail.com">Apoorv Garg</a>,
+    <a href="mailto:nikhil.paliwal14@gmail.com">Nikhil Paliwal</a>,
+    <a href="mailto:david.perez.saura@upm.es">David Pérez</a>,
+    and <a href="mailto:skyler.zhaomeiqi@gmail.com">Meiqi Zhao</a>
+
+    <div style="width: 70%; margin: 0 auto;">
+        {% include figure.liquid path="assets/img/final/jde_gsoc.png" class="img-fluid rounded mx-auto d-block" zoomable=true %}
+    </div>
+
+    <p>Under Construction</p>
+    <p>
+        <a href="https://theroboticsclub.github.io/gsoc2024-ZebinHuang/">GitHub</a> |
+        <a href="https://theroboticsclub.github.io/gsoc2024-ZebinHuang/">Website</a> |
+        <a href="https://theroboticsclub.github.io/gsoc2024-ZebinHuang/">Video</a> |
+        <a href="https://theroboticsclub.github.io/gsoc2024-ZebinHuang/">Model Weights</a> |
+        <a href="https://theroboticsclub.github.io/gsoc2024-ZebinHuang/">Model Card</a> |
+        <a href="https://theroboticsclub.github.io/gsoc2024-ZebinHuang/">Data Card</a>
+    </p>
+</div>
+
 
 # About Me
 
@@ -23,14 +47,4 @@ social: true # includes social icons at the bottom of the page
 
 📫 Questions or suggestions? Reach out via email.
 
----
-
-## Project Overview
-
-In previous editions of GSoC, we have explored [Behavior Metrics](https://github.com/JdeRobot/BehaviorMetrics) as a tool for the evaluation of end-to-end autonomous driving models. We have also explored optimization of end-to-end models and navigation based on segmented images and commands (see video and [project link](https://github.com/TheRoboticsClub/gsoc2023-Meiqi_Zhao)). In this project, we would like to combine the previously acquired knowledge with Large Language Models (LLMs), using the projects that we successfully developed during past GSoC editions.
-
-The idea is to integrate an LLM system with an end-to-end autonomous driving model so the user can give commands in text mode directly to the vehicle, as you would when using a real-life taxi (“please, stop here”, “please, turn to the left at the next intersection”). This idea has already been explored in research projects, and we will be replicating it.
-
-Mentors: Sergio Paniego Blanco (sergiopaniegoblanco AT gmail.com), Apoorv Garg (apoorvgarg.ms AT gmail.com)， Nikhil Paliwal ( nikhil.paliwal14 AT gmail.com ), David Pérez (david.perez.saura AT upm.es) and Meiqi Zhao (skyler.zhaomeiqi AT gmail.com)
-
-For a list of our projects, please visit [repositories page](/gsoc2024-ZebinHuang/repositories/).
+For a list of related projects, please visit [repositories page](/gsoc2024-ZebinHuang/repositories/).
