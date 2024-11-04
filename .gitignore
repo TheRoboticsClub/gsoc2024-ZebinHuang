@@ -1,0 +1,4 @@
+.vscode/.history/*
+*.pyc
+*.hdf5
+*.pth
