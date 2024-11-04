@@ -5,19 +5,18 @@ import random
 import carla
 from utils.traffic import spawn_vehicles, spawn_pedestrians, cleanup
 from sensors import RGBCamera, SegmentationCamera, setup_collision_sensor
-from utils.preprocess import carla_seg_to_array, carla_rgb_to_array, road_option_to_int, int_to_road_option, read_routes, traffic_light_to_int
+from utils.preprocess import carla_seg_to_array, carla_rgb_to_array,  road_option_to_int, int_to_road_option, read_routes, traffic_light_to_int
 from utils.test_utils import model_control, model_control_v2, calculate_distance, DistanceTracker, calculate_delta_yaw
-from utils.high_level_command import HighLevelCommandLoader
-from ModifiedDeepestLSTMTinyPilotNet.utils.ModifiedDeepestLSTMTinyPilotNet import PilotNetOneHot, PilotNetOneHotNoLight
+from ModifiedDeepestLSTMTinyPilotNet.utils.ModifiedDeepestLSTMTinyPilotNet_v2 import PilotNetOneHot, PilotNetOneHotNoLight, PilotNetOneHotDistance
 from utils.metrics import MetricsRecorder
 
 import numpy as np
 import torch
 import pygame
+import json
 
 
 PYGAME_WINDOW_SIZE = (1280, 720)
-
 has_collision = False
 collision_type = None
 
@@ -31,11 +30,7 @@ def collision_callback(data):
 
 def load_model(model_path, device, ignore_traffic_light=False, one_hot=True, combined_control=True):
     num_labels = 2 if combined_control else 3
-    if ignore_traffic_light:
-        model = PilotNetOneHotNoLight((288, 200, 6), num_labels, 4)
-    else:
-        model = PilotNetOneHot((288, 200, 6), num_labels, 4, 4)
-
+    model = PilotNetOneHotDistance((288, 200, 6), num_labels, 5, 4)
     model.load_state_dict(torch.load(model_path))
     model.to(device)
     model.eval()
@@ -116,6 +111,16 @@ def sample_route(world, episode_configs):
     return episode_config, start_point, end_point, route_length, route
 
 
+def sample_route_v2(world, episode_config):
+    spawn_points = world.get_map().get_spawn_points()
+    start_point = spawn_points[episode_config[0]]
+    end_point = spawn_points[episode_config[1]]
+    logging.info(f"from spawn point #{episode_config[0]} to #{episode_config[1]}")
+    route_length = episode_config[2]
+    route = episode_config[3].copy()
+    return episode_config, start_point, end_point, route_length, route
+
+
 def initialize_vehicle(world, start_point):
     blueprint_library = world.get_blueprint_library()
     blueprint = blueprint_library.filter('model3')[0]
@@ -158,10 +163,9 @@ def check_end_conditions(world, vehicle, end_point, frame, params, dist_tracker,
     reached_destination = calculate_distance(vehicle.get_transform().location, end_point.location) < 1.5
     exceeded_max_frames = frame > params.max_frames_per_episode
 
-    if not (reached_destination or exceeded_max_frames or turning_infraction):
+    if not (reached_destination or exceeded_max_frames):
         return False
 
-    # Determine and record the end condition
     if reached_destination:
         metrics_recorder.success_record.append(1)
         end_condition = "success"
@@ -184,6 +188,13 @@ def check_end_conditions(world, vehicle, end_point, frame, params, dist_tracker,
     return True
 
 
+def read_routes_v2(filename):
+    with open(filename, 'r') as file:
+        data = json.load(file)
+    routes = [int(data['start_index']),int(data['end_index']),int(data['route_length']),data['commands']]
+    return routes
+
+
 def main(params):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     logging.info(f'device: {device}')
@@ -191,8 +202,8 @@ def main(params):
 
     world, client = setup_carla_world(params)
     traffic_manager = setup_traffic_manager(client, params)
-    episode_configs = read_routes(params.episode_file)
-    print(episode_configs)
+    episode_config = read_routes_v2(params.episode_file)
+
     screen, myfont = initialize_pygame(size=PYGAME_WINDOW_SIZE)
 
     metrics_recorder = MetricsRecorder()
@@ -202,16 +213,19 @@ def main(params):
 
         global has_collision, collision_type
         has_collision = False
-
-        episode_config, start_point, end_point, route_length, route = sample_route(world, episode_configs)
+        episode_config, start_point, end_point, route_length, route = sample_route_v2(world, episode_config)
 
         vehicle = initialize_vehicle(world, start_point)
+
+        spectator = world.get_spectator()
+        transform = vehicle.get_transform()
+        spectator.set_transform(carla.Transform(transform.location + carla.Location(z=50), carla.Rotation(pitch=-90)))
 
         all_id, all_actors, pedestrians_list, vehicles_list = initialize_traffic(world, client, traffic_manager)
 
         rgb_cam, seg_cam, pygame_cam, sensors = setup_sensors(world, vehicle)
 
-        hlc_loader = HighLevelCommandLoader(vehicle, world.get_map(), route)
+        # hlc_loader = HighLevelCommandLoader_v2(vehicle, world.get_map(), route, route_segment, internal_command)
 
         for _ in range(10):
             world.tick()
@@ -225,7 +239,11 @@ def main(params):
         prev_collision = False
         metrics_recorder.start_episode()
         turning_infraction = False
+        accumulated_distance = 0.0
 
+        current_route_index = 0
+        print("route:",route)
+        print("route:",len(route))
         while True:
             transform = vehicle.get_transform()
             vehicle_location = transform.location
@@ -241,12 +259,17 @@ def main(params):
 
             world.tick()
 
+            distance_traveled = vehicle.get_transform().location.distance(vehicle_location)
             velocity = vehicle.get_velocity()
             speed_m_s = np.sqrt(velocity.x**2 + velocity.y**2 + velocity.z**2)
             speed = 3.6 * speed_m_s  # m/s to km/h
 
-            # read next high-level command or choose a random direction
-            hlc = hlc_loader.get_next_hlc()
+            hlc = route[current_route_index]['action']
+            accumulated_distance += distance_traveled
+            if accumulated_distance > route[current_route_index]['distance'] and current_route_index+1 < len(route):
+                accumulated_distance = 0
+                current_route_index += 1
+
             if hlc != 0:
                 if prev_hlc == 0:
                     prev_yaw = vehicle.get_transform().rotation.yaw
@@ -270,40 +293,58 @@ def main(params):
                 delta_yaw = 0
 
             prev_hlc = hlc
-
             frame_data = {
                 'hlc': hlc,
                 'measurements': speed,
                 'rgb': np.copy(carla_rgb_to_array(rgb_cam.get_sensor_data())),
-                'segmentation': np.copy(carla_seg_to_array(seg_cam.get_sensor_data()))
+                'segmentation': np.copy(carla_seg_to_array(seg_cam.get_sensor_data())),
+                'distance': 0 if hlc != 4 else accumulated_distance
             }
-
-            # detect running red light
             if not params.ignore_traffic_light:
                 light_status = -1
                 if vehicle.is_at_traffic_light():
                     traffic_light = vehicle.get_traffic_light()
                     light_status = traffic_light.get_state()
                     traffic_light_location = traffic_light.get_transform().location
-                    distance_to_traffic_light = np.sqrt((vehicle_location.x - traffic_light_location.x)**2 + (vehicle_location.y - traffic_light_location.y)**2)
-                    if light_status == carla.libcarla.TrafficLightState.Red and distance_to_traffic_light < 6 and speed_m_s > 5:
+                    distance_to_traffic_light = np.sqrt(
+                        (vehicle_location.x - traffic_light_location.x) ** 2
+                        + (vehicle_location.y - traffic_light_location.y) ** 2
+                    )
+                    if (
+                        light_status == carla.libcarla.TrafficLightState.Red
+                        and distance_to_traffic_light < 6
+                        and speed_m_s > 5
+                    ):
                         if not running_light:
                             running_light = True
-                            metrics_recorder.record('red_light')
-                            logging.debug('running light count ', metrics_recorder.infractions['red_light'])
+                            metrics_recorder.record("red_light")
+                            logging.debug(
+                                "running light count", metrics_recorder.infractions["red_light"]
+                            )
                     else:
                         running_light = False
-                frame_data['light'] = np.array([traffic_light_to_int(light_status)])
+                frame_data["light"] = np.array([traffic_light_to_int(light_status)])
 
-            # update pygame frame
-            line1 = f'Euclidean distance to goal: {round(calculate_distance(vehicle_location, end_point.location))}m'
-            line2 = f'Distance traveled: {round(dist_tracker.get_total_distance())}m'
-            line3 = f'Command: {int_to_road_option(hlc)}'
+            line1 = f"Euclidean distance to goal: {round(calculate_distance(vehicle_location, end_point.location))}m"
+            line2 = f"Distance traveled: {round(dist_tracker.get_total_distance())}m"
+            line3 = f"Command: {int_to_road_option(hlc)}"
             text = [line1, line2, line3]
-            update_pygame_frame(screen, myfont, PYGAME_WINDOW_SIZE, carla_rgb_to_array(pygame_cam.get_sensor_data()).swapaxes(0, 1), text)
+            update_pygame_frame(
+                screen,
+                myfont,
+                PYGAME_WINDOW_SIZE,
+                carla_rgb_to_array(pygame_cam.get_sensor_data()).swapaxes(0, 1),
+                text,
+            )
 
             # apply vehicle control
-            control = model_control(model, frame_data, ignore_traffic_light=params.ignore_traffic_light, device=device, combined_control=params.combined_control)
+            control = model_control_v2(
+                model,
+                frame_data,
+                ignore_traffic_light=params.ignore_traffic_light,
+                device=device,
+                combined_control=params.combined_control,
+            )
             vehicle.apply_control(control)
 
             frame += 1
@@ -321,10 +362,10 @@ if __name__ == '__main__':
     parser.add_argument('--tm_port', type=int, default=8000)
     parser.add_argument('--episode_file', required=True)
     parser.add_argument('--model', required=True)
-    parser.add_argument('--n_vehicles', type=int, default=50)
+    parser.add_argument('--n_vehicles', type=int, default=20)
     parser.add_argument('--n_pedestrians', type=int, default=0)
     parser.add_argument('--n_episodes', type=int, default=4)
-    parser.add_argument('--max_frames_per_episode', type=int, default=1500)
+    parser.add_argument('--max_frames_per_episode', type=int, default=6000)
     parser.add_argument('--ignore_traffic_light', action="store_true")
     parser.add_argument('--combined_control', action="store_true")
 

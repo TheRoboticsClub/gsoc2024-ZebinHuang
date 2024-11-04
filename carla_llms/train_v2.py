@@ -2,10 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import torch
 import matplotlib.pyplot as plt
-from utils.load_dataset import CARLADataset
+from ModifiedDeepestLSTMTinyPilotNet.utils.load_dataset import CARLADataset
 from torchvision.transforms import Compose
-from utils.preprocess import FilterClassesTransform, ShiftAndAdjustSteer
-from utils.ModifiedDeepestLSTMTinyPilotNet_v2 import PilotNetEmbeddingNoLight, PilotNetOneHot, PilotNetOneHot, PilotNetOneHotDistance, PilotNetOneHotNoLight
+from ModifiedDeepestLSTMTinyPilotNet.utils.preprocess import FilterClassesTransform, ShiftAndAdjustSteer
+from ModifiedDeepestLSTMTinyPilotNet.utils.ModifiedDeepestLSTMTinyPilotNet_v2 import PilotNetEmbeddingNoLight, PilotNetOneHot, PilotNetOneHot, PilotNetOneHotDistance, PilotNetOneHotNoLight
 from torch.utils.data import DataLoader
 import matplotlib.pyplot as plt
 import numpy as np
@@ -115,7 +115,7 @@ def train_model(model, train_dataloader, val_dataloader, epochs, device, lr=0.00
     torch.save({'train_losses': train_losses, 'val_losses': val_losses}, 'losses.pth')
 
 
-filter_transform = FilterClassesTransform(mode='both', classes_to_keep=[1, 7, 12, 13, 14, 15, 16, 17, 18, 19, 24])  # keep traffic light
+filter_transform = FilterClassesTransform(mode='both', classes_to_keep=[1, 7, 12, 13, 14, 15, 16, 17, 18, 19, 24])
 shift_transform = ShiftAndAdjustSteer(shift_fraction=0.1, steer_adjust=1.0)
 transforms = Compose([filter_transform, shift_transform])
 
@@ -125,8 +125,7 @@ epochs = 40
 transform = None
 one_hot = True
 combined_control = True
-train_dataloader, val_dataloader = load_data(batch_size, '../data/Town01/', transform=transforms, one_hot=one_hot, combined_control=combined_control)
-print("loaded data")
+train_dataloader, val_dataloader = load_data(batch_size, './data/Town01', transform=transforms, one_hot=one_hot, combined_control=combined_control)
 
 # Define the device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

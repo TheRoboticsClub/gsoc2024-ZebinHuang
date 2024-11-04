@@ -5,6 +5,7 @@ import glob
 import h5py
 import torch.nn.functional as F
 
+
 class CARLADataset(Dataset):
     def __init__(self, directory, transform=None, one_hot=True, combined_control=False):
         """

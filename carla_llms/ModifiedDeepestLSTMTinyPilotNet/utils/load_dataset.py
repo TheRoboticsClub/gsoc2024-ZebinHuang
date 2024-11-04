@@ -5,6 +5,7 @@ import glob
 import h5py
 import torch.nn.functional as F
 
+
 class CARLADataset(Dataset):
     def __init__(self, directory, transform=None, one_hot=True, combined_control=False):
         """
@@ -26,13 +27,13 @@ class CARLADataset(Dataset):
             length = file['frame'].shape[0]
             self.lengths.append(length)
             self.total_length += length
-        
+
         self.one_hot = one_hot
         self.combined_control = combined_control
 
     def __len__(self):
         return self.total_length
-    
+
 
     # one hot encoding for high-level ommand
     def __getitem__(self, idx):
@@ -79,7 +80,7 @@ class CARLADataset(Dataset):
             controls = torch.tensor([controls[0], (controls[1]+ 1.0) / 2.0, controls[2]], dtype=torch.float32)
         else: # combine throttle and brake
             controls = torch.tensor([(controls[0] - controls[2] + 1.0) / 2.0, (controls[1]+ 1.0) / 2.0], dtype=torch.float32)
-        
+
         return img, sample['measurements'], sample['hlc'], sample['light'], controls
 
     def close(self):

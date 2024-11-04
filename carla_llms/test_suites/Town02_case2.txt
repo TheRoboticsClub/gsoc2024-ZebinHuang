@@ -1,0 +1,27 @@
+{
+    "start_index":77,
+    "end_index":1,
+    "route_length":160,
+    "commands":[
+        {
+            "action":0,
+            "distance":16
+        },
+        {
+            "action":1,
+            "distance":32
+        },
+        {
+            "action":0,
+            "distance":33
+        },
+        {
+            "action":1,
+            "distance":29
+        },
+        {
+            "action":4,
+            "distance":50
+        }
+    ]
+}
