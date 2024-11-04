@@ -1,6 +1,7 @@
 import numpy as np
 import carla
 
+
 def traffic_light_to_int(light_status):
     light_dict = {
         -1: 0,
@@ -17,9 +18,11 @@ def road_option_to_int(high_level_command):
         "LaneFollow": 0,
         "Left": 1,
         "Right": 2,
-        "Straight": 3
+        "Straight": 3,
+        "Run50m":4,
     }
     return road_option_dict[high_level_command]
+
 
 def int_to_road_option(high_level_command):
     """convert integer high-level command to Carla.RoadOptions"""
@@ -27,9 +30,11 @@ def int_to_road_option(high_level_command):
         0: "LaneFollow",
         1: "Left",
         2: "Right",
-        3: "Straight"
+        3: "Straight",
+        4: "Run50m",
     }
     return road_option_dict[high_level_command]
+
 
 def to_bgra_array(image):
     """Convert a CARLA raw image to a BGRA numpy array."""
@@ -46,14 +51,15 @@ def carla_rgb_to_array(image):
     array = array[:, :, ::-1]
     return array
 
+
 def carla_seg_to_array(image):
     """
     Convert an image containing CARLA semantic segmentation labels to
     Cityscapes palette.
     """
-    #https://github.com/carla-simulator/carla/blob/master/LibCarla/source/carla/image/CityScapesPalette.h
+    # https://github.com/carla-simulator/carla/blob/master/LibCarla/source/carla/image/CityScapesPalette.h
     classes = {
-            0: [0, 0, 0],         # Unlabeled  
+            0: [0, 0, 0],         # Unlabeled
             1: [128,  64, 128],   # Road ***
             2: [244,  35, 232],   # Sidewalk
             3: [70,  70,  70],    # Building
@@ -97,4 +103,3 @@ def read_routes(filename):
         lines = f.readlines()
     routes = [((int(line.split()[0]), int(line.split()[1])), int(line.split()[2]), line.split()[3:]) for line in lines]
     return routes
-

@@ -84,6 +84,7 @@ class NoisyTrafficManagerAgent:
         self.path = None
         self.route = None
         self.destination = None
+        self.finish = False
 
     def run_step(self, debug=False):
         """
@@ -148,6 +149,19 @@ class NoisyTrafficManagerAgent:
         return self.traffic_manager.get_next_action(self.vehicle)[0]
 
     def done(self):
+        if not self.finish:
+            vehicle_location = self.vehicle.get_location()
+            final_location = self.path[-1] if self.path else self.destination.location if self.route else None
+
+            if final_location is None:
+                return False  # The vehicle has no path or route
+
+            distance = vehicle_location.distance(final_location)
+            if distance < 1.0:
+                self.finish = True
+        return self.finish
+
+    def reaching_countdown_distance(self, countdown_distance=50.0):
         vehicle_location = self.vehicle.get_location()
         final_location = self.path[-1] if self.path else self.destination.location if self.route else None
 
@@ -155,4 +169,4 @@ class NoisyTrafficManagerAgent:
             return False  # The vehicle has no path or route
 
         distance = vehicle_location.distance(final_location)
-        return distance < 1.0
+        return distance < countdown_distance

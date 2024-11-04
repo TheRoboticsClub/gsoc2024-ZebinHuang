@@ -35,6 +35,38 @@ def model_control(model, frame_data, device='cpu', filter=True, one_hot=True, ig
 
     return carla.VehicleControl(throttle=throttle, steer=steer, brake=brake)
 
+def model_control_v2(model, frame_data, device='cpu', filter=True, one_hot=True, ignore_traffic_light=True, combined_control=False):
+    global counter 
+    img, speed, hlc, light, distance = preprocess_data_v2(frame_data, filter=filter, one_hot=one_hot, ignore_traffic_light=ignore_traffic_light)
+    img = img.to(device)
+    speed = speed.to(device)
+    hlc = hlc.to(device)
+    light = light.to(device)
+    distance = distance.to(device)
+    if ignore_traffic_light:
+        prediction = model(img, speed, hlc, distance)
+    else:
+        prediction = model(img, speed, hlc, light, distance)
+    prediction = prediction.detach().cpu().numpy().flatten()
+    #print(f"prediction: {prediction}")
+
+    if not combined_control:
+        throttle, steer, brake = prediction
+        throttle = float(throttle)
+        brake = float(brake)
+        if brake < 0.05: brake = 0.0
+    else:
+        combined, steer = prediction
+        combined = float(combined)
+        throttle, brake = 0.0, 0.0
+        if combined >= 0.5:
+            throttle = (combined - 0.5) / 0.5
+        else:
+            brake = (0.5 - combined) / 0.5
+    
+    steer = (float(steer) * 2.0) - 1.0
+
+    return carla.VehicleControl(throttle=throttle, steer=steer, brake=brake)
 # def preprocess_data(data):
 #     rgb = torch.tensor(data['rgb'].copy(), dtype=torch.float32).permute(2, 0, 1)
 #     rgb /= 255.0
@@ -88,6 +120,44 @@ def preprocess_data(data, filter=True, one_hot=True, ignore_traffic_light=True):
 
     return img, speed, hlc, light
 
+def preprocess_data_v2(data, filter=True, one_hot=True, ignore_traffic_light=True):
+    rgb = data['rgb'].copy()
+    segmentation = data['segmentation'].copy()
+
+    if filter:
+        rgb, segmentation = filter_classes(rgb, segmentation)
+
+    rgb = torch.tensor(rgb, dtype=torch.float32).permute(2, 0, 1)
+    rgb /= 255.0
+    
+    segmentation = torch.tensor(segmentation, dtype=torch.float32).permute(2, 0, 1)
+    segmentation /= 255.0
+
+    img = torch.cat((rgb, segmentation), dim=0)
+    img = img.unsqueeze(0)
+    
+    speed = torch.tensor(data['measurements'].copy(), dtype=torch.float32)
+    speed = torch.clamp(speed / 40, 0, 1)
+    speed = speed.unsqueeze(0)
+
+    hlc = torch.tensor(data['hlc'], dtype=torch.long)
+    if one_hot:
+        hlc = F.one_hot(hlc.to(torch.int64), num_classes=5)
+    hlc = hlc.unsqueeze(0)
+
+    distance = torch.tensor(data['distance'], dtype=torch.float32)
+    distance = torch.clamp(distance / 50.0, 0, 1.0).to(torch.float32)
+    distance = distance.unsqueeze(0)
+
+    if not ignore_traffic_light:
+        light = torch.tensor(data['light'], dtype=torch.long)
+        if one_hot:
+            light = F.one_hot(light.to(torch.int64), num_classes=4)
+        light = light.unsqueeze(0)
+    else:
+        light = None
+
+    return img, speed, hlc, light, distance
 
 def filter_classes(rgb, seg, classes_to_keep = [1, 7, 12, 13, 14, 15, 16, 17, 18, 19, 24]):
     classes = {

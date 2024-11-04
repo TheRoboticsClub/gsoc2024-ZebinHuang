@@ -8,7 +8,7 @@ from sensors import RGBCamera, SegmentationCamera, setup_collision_sensor
 from utils.preprocess import carla_seg_to_array, carla_rgb_to_array,  road_option_to_int, int_to_road_option, read_routes, traffic_light_to_int
 from utils.test_utils import model_control, model_control_v2, calculate_distance, DistanceTracker, calculate_delta_yaw
 from utils.high_level_command import HighLevelCommandLoader
-from ModifiedDeepestLSTMTinyPilotNet.utils.ModifiedDeepestLSTMTinyPilotNet import PilotNetOneHot, PilotNetOneHotNoLight
+from ModifiedDeepestLSTMTinyPilotNet.utils.ModifiedDeepestLSTMTinyPilotNet_v2 import PilotNetOneHot, PilotNetOneHotNoLight, PilotNetOneHotDistance
 from utils.metrics import MetricsRecorder
 
 import numpy as np
@@ -31,11 +31,7 @@ def collision_callback(data):
 
 def load_model(model_path, device, ignore_traffic_light=False, one_hot=True, combined_control=True):
     num_labels = 2 if combined_control else 3
-    if ignore_traffic_light:
-        model = PilotNetOneHotNoLight((288, 200, 6), num_labels, 4)
-    else:
-        model = PilotNetOneHot((288, 200, 6), num_labels, 4, 4)
-
+    model = PilotNetOneHotDistance((288, 200, 6), num_labels, 5, 4)
     model.load_state_dict(torch.load(model_path))
     model.to(device)
     model.eval()
@@ -158,7 +154,8 @@ def check_end_conditions(world, vehicle, end_point, frame, params, dist_tracker,
     reached_destination = calculate_distance(vehicle.get_transform().location, end_point.location) < 1.5
     exceeded_max_frames = frame > params.max_frames_per_episode
 
-    if not (reached_destination or exceeded_max_frames or turning_infraction):
+    if not (reached_destination or exceeded_max_frames):
+    # if not (reached_destination or exceeded_max_frames or turning_infraction):
         return False
 
     # Determine and record the end condition
@@ -192,7 +189,7 @@ def main(params):
     world, client = setup_carla_world(params)
     traffic_manager = setup_traffic_manager(client, params)
     episode_configs = read_routes(params.episode_file)
-    print(episode_configs)
+
     screen, myfont = initialize_pygame(size=PYGAME_WINDOW_SIZE)
 
     metrics_recorder = MetricsRecorder()
@@ -225,6 +222,8 @@ def main(params):
         prev_collision = False
         metrics_recorder.start_episode()
         turning_infraction = False
+        accumulated_distance = 0.0
+        hlc4_done = False
 
         while True:
             transform = vehicle.get_transform()
@@ -241,6 +240,7 @@ def main(params):
 
             world.tick()
 
+            distance_traveled = vehicle.get_transform().location.distance(vehicle_location)
             velocity = vehicle.get_velocity()
             speed_m_s = np.sqrt(velocity.x**2 + velocity.y**2 + velocity.z**2)
             speed = 3.6 * speed_m_s  # m/s to km/h
@@ -255,6 +255,19 @@ def main(params):
                     delta_yaw += calculate_delta_yaw(prev_yaw, cur_yaw)
                     prev_yaw = cur_yaw
 
+            # if calculate_distance(vehicle.get_transform().location, end_point.location) < 75:
+            if frame > 10 and hlc4_done == False:
+                hlc = 4
+                accumulated_distance += distance_traveled
+
+            if prev_hlc == 4 and hlc4_done == False and frame < 500:
+                hlc = 4
+                accumulated_distance += distance_traveled
+            elif prev_hlc == 4 and hlc4_done == False and not vehicle.is_at_traffic_light():
+                print("Stop hlc4 ...")
+                hlc4_done = True
+                accumulated_distance = 0.0
+
             # detect whether the vehicle made the correct turn
             if prev_hlc != 0 and hlc == 0:
                 logging.info(f'turned {delta_yaw} degrees')
@@ -266,7 +279,7 @@ def main(params):
                 elif prev_hlc != 3:
                     turning_infraction = True
                 if turning_infraction:
-                    logging.info('Wrong Turn!!!')
+                    logging.info('Wrong Turn!')
                 delta_yaw = 0
 
             prev_hlc = hlc
@@ -275,9 +288,10 @@ def main(params):
                 'hlc': hlc,
                 'measurements': speed,
                 'rgb': np.copy(carla_rgb_to_array(rgb_cam.get_sensor_data())),
-                'segmentation': np.copy(carla_seg_to_array(seg_cam.get_sensor_data()))
+                'segmentation': np.copy(carla_seg_to_array(seg_cam.get_sensor_data())),
+                'distance': accumulated_distance
             }
-
+            # print("accumulated_distance:",accumulated_distance)
             # detect running red light
             if not params.ignore_traffic_light:
                 light_status = -1
@@ -303,7 +317,7 @@ def main(params):
             update_pygame_frame(screen, myfont, PYGAME_WINDOW_SIZE, carla_rgb_to_array(pygame_cam.get_sensor_data()).swapaxes(0, 1), text)
 
             # apply vehicle control
-            control = model_control(model, frame_data, ignore_traffic_light=params.ignore_traffic_light, device=device, combined_control=params.combined_control)
+            control = model_control_v2(model, frame_data, ignore_traffic_light=params.ignore_traffic_light, device=device, combined_control=params.combined_control)
             vehicle.apply_control(control)
 
             frame += 1
@@ -321,10 +335,10 @@ if __name__ == '__main__':
     parser.add_argument('--tm_port', type=int, default=8000)
     parser.add_argument('--episode_file', required=True)
     parser.add_argument('--model', required=True)
-    parser.add_argument('--n_vehicles', type=int, default=50)
+    parser.add_argument('--n_vehicles', type=int, default=20)
     parser.add_argument('--n_pedestrians', type=int, default=0)
     parser.add_argument('--n_episodes', type=int, default=4)
-    parser.add_argument('--max_frames_per_episode', type=int, default=6000)
+    parser.add_argument('--max_frames_per_episode', type=int, default=1000)
     parser.add_argument('--ignore_traffic_light', action="store_true")
     parser.add_argument('--combined_control', action="store_true")
 
