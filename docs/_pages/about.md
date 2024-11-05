@@ -30,7 +30,7 @@ social: true # includes social icons at the bottom of the page
     <p>
         <a href="https://github.com/TheRoboticsClub/gsoc2024-ZebinHuang">GitHub</a> |
         <a href="https://theroboticsclub.github.io/gsoc2024-ZebinHuang/">Website</a> |
-        <a href="https://youtu.be/lnmpi-fqVZE">Video</a> |
+        <a href="https://youtu.be/_0CpMj_G5fM">Video</a> |
         <a href="https://docs.google.com/document/d/1b2ZEU5Gt8gP2ae_YzNSJSd7RukUrsG_aDJFLnbvoQiM/edit?tab=t.0#heading=h.isdep2i97rn2">Meeting Logs</a> |
         <a href="https://huggingface.co/zebin-huang/gsoc2024-ZebinHuang">Model Card</a> |
         <a href="https://theroboticsclub.github.io/gsoc2024-ZebinHuang/">Data Card</a>
